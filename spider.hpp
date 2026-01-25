@@ -1,23 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   spider.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/26 00:27:51 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/26 00:41:55 by adnen            ###   ########.fr       */
+/*   Created: 2026/01/26 00:27:43 by adnen             #+#    #+#             */
+/*   Updated: 2026/01/26 00:41:49 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes.hpp"
-#include "spider.hpp"
+#ifndef SPIDER_HPP
+#define SPIDER_HPP
 
-int main(int argc, char **argv)
+#include "includes.hpp"
+
+class Spider
 {
-	std::vector<std::string> vec(argv + 1, argv + argc);
-	for (const auto& it : vec)
-		std::cout << it << std::endl;
-	Spider spider;
-	return 0;
-}
+	public:
+		Spider();
+		Spider(const Spider &src);
+		Spider &operator=(const Spider &src);
+		~Spider();
+	private:
+		
+};
+
+#endif
