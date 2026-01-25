@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:16:38 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/26 00:41:26 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/26 00:55:53 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <vector>
 # include <string>
 # include <algorithm>
+# include <curl/curl.h>
 
 // --- RESET (Indispensable pour arrêter la couleur) ---
 #define RESET   "\033[0m"

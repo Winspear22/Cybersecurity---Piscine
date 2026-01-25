@@ -6,7 +6,7 @@
 #    By: adnen <adnen@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/26 00:46:32 by adnen             #+#    #+#              #
-#    Updated: 2026/01/26 00:48:39 by adnen            ###   ########.fr        #
+#    Updated: 2026/01/26 00:55:22 by adnen            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,13 +16,16 @@ NAME        = spider
 # Liste tes fichiers ici
 SRCS        = main.cpp spider.cpp
 
-# Fichiers Headers (pour que make recompile si on change le .hpp)
+# Fichiers Headers
 INCLUDES    = includes.hpp spider.hpp
 
 OBJS        = $(SRCS:.cpp=.o)
 
 CC          = g++
 FLAGS       = -Wall -Wextra -Werror -std=c++17
+
+# [NOUVEAU] : On ajoute le flag pour linker la librairie curl
+LIBS        = -lcurl
 
 # --- COULEURS ---
 GREEN       = \033[1;32m
@@ -35,7 +38,8 @@ all: $(NAME)
 # C'est ici que la magie opère
 $(NAME): $(OBJS)
 	@echo "$(GREEN)Création de l'exécutable $(NAME)...$(RESET)"
-	@$(CC) $(FLAGS) $(OBJS) -o $(NAME)
+	# [MODIFIÉ] : On ajoute $(LIBS) à la fin de la commande
+	@$(CC) $(FLAGS) $(OBJS) -o $(NAME) $(LIBS)
 	@echo "$(GREEN)Nettoyage automatique des fichiers objets (.o)...$(RESET)"
 	@rm -f $(OBJS) 
 	@echo "$(GREEN)✅ Terminé !$(RESET)"
