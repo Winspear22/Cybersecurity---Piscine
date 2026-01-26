@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:27:43 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/26 13:43:35 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/26 14:31:20 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ class Spider
 		std::string					_request(const std::string& url);
 		static size_t				_write_callback(void *contents, size_t size, size_t nmemb, void *userp);
 		void						_parse_html(const std::string& html);
+		std::string					_resolve_url(const std::string& base_url, const std::string& link_url);
 };
 
 #endif

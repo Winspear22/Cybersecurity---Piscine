@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:28:03 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/26 14:08:48 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/26 14:38:24 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,4 +200,12 @@ void Spider::_parse_html(const std::string& html)
 		++it;
 	}
 	std::cout << BOLD_CYAN << "🔍 Analyse terminée : " << _image_urls.size() << " images trouvées." << RESET << std::endl;
+}
+
+std::string Spider::_resolve_url(const std::string& base_url, const std::string& link_url)
+{
+	if (link_url.find("http") == 0)
+		return link_url;
+	else if (link_url.find("//") == 0)
+		return "http:" + link_url;
 }
