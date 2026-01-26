@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:28:03 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/26 12:01:48 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/26 12:39:19 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,16 @@ std::string Spider::_request(const std::string& url)
         // On passe l'ADRESSE (&) de readBuffer pour que le callback puisse écrire DEDANS.
         // C'est ici que le lien se fait entre ta variable locale et la librairie C.
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+
+		// --- NOUVEAU : GESTION HTTPS --- (essayer avec l'adresse : https://self-signed.badssl.com/)
+        
+        // 1. Désactiver la vérification du certificat (évite les erreurs "Certificat inconnu")
+        //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+        
+        // 2. Désactiver la vérification du nom d'hôte (optionnel mais conseillé en mode "bourrin")
+        //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+
+        // -------------------------------
 
         // 3. Exécution : C'est le grand saut !
         // Le programme se met en pause ici le temps que le téléchargement se fasse.
