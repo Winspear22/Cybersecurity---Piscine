@@ -1,35 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   spider.hpp                                         :+:      :+:    :+:   */
+/*   Saver.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/26 00:27:43 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/26 13:14:43 by adnen            ###   ########.fr       */
+/*   Created: 2026/01/26 12:56:16 by adnen             #+#    #+#             */
+/*   Updated: 2026/01/26 13:27:39 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef __SPIDER_HPP__
-#define __SPIDER_HPP__
+#ifndef __SAVER_HPP__
+#define __SAVER_HPP__
 
-#include "includes.hpp"
+# include "includes.hpp"
 
-class Spider
+class Saver
 {
 	public:
-		Spider();
-		Spider(const Spider &src);
-		Spider &operator=(const Spider &src);
-		~Spider();
+		Saver();
+		Saver(const Saver &src);
+		Saver &operator=(const Saver &src);
+		~Saver();
 
-		void parse_arguments(const std::vector<std::string>& args);
-		void run();
+		void save_file(const std::string& data, const std::string& url);
+
 	private:
-		std::string _start_url;
-		std::string _request(const std::string& url);
-		static size_t _write_callback(void *contents, size_t size, size_t nmemb, void *userp);
-		
+		std::string _extract_filename(const std::string& url);
+
 };
 
 #endif
