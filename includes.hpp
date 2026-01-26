@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:16:38 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/26 13:29:50 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/26 13:41:40 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 # include <algorithm>
 # include <curl/curl.h>
 # include <fstream>
+# include <set>
+# include <regex>
 
 // --- RESET (Indispensable pour arrêter la couleur) ---
 #define RESET   "\033[0m"

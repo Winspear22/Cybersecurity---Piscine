@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:27:43 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/26 13:37:47 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/26 13:43:35 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,17 @@ class Spider
 		Spider &operator=(const Spider &src);
 		~Spider();
 
-		void parse_arguments(const std::vector<std::string>& args);
-		void run();
+		void						parse_arguments(const std::vector<std::string>& args);
+		void						run();
+
 	private:
-		Saver       _saver;
-		std::string _start_url;
-		std::string _request(const std::string& url);
-		static size_t _write_callback(void *contents, size_t size, size_t nmemb, void *userp);
+		Saver						_saver;
+		std::string					_start_url;
+		std::set<std::string>		_image_urls;
 		
+		std::string					_request(const std::string& url);
+		static size_t				_write_callback(void *contents, size_t size, size_t nmemb, void *userp);
+		void						_parse_html(const std::string& html);
 };
 
 #endif

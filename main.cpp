@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:27:51 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/26 13:27:51 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/26 13:40:47 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,8 @@ int main(int argc, char **argv)
         std::vector<std::string> args(argv + 1, argv + argc);
         
         Spider spider;              // Création
-        //spider.parse_arguments(args); // Configuration
-        //spider.run();               // Action !
-		Saver saver;
+        spider.parse_arguments(args); // Configuration
+        spider.run();               // Action !
     }
     else
     {

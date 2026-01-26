@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:28:03 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/26 12:50:43 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/26 13:43:55 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,4 +162,9 @@ size_t Spider::_write_callback(void *contents, size_t size, size_t nmemb, void *
     // On renvoie la taille traitée. Si on renvoie un chiffre différent de realsize,
     // libcurl pensera qu'il y a eu une erreur d'écriture et coupera la connexion.
     return realsize;
+}
+
+void Spider::_parse_html(const std::string& html)
+{
+	
 }
