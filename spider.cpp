@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:28:03 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/26 12:39:19 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/26 12:50:43 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,57 +71,72 @@ void Spider::run()
 
 std::string Spider::_request(const std::string& url)
 {
-    CURL        *curl;          // Le "handle" : l'objet qui représente ta session
-    CURLcode    res;            // Le code de retour pour savoir si ça a marché
-    std::string readBuffer;     // LE SAC : La string vide qui va se remplir
+    CURL        *curl = curl_easy_init();
+    std::string readBuffer;
+    CURLcode    res;
 
-	(void)res;
-    // 1. Initialisation : On demande à la libcurl de préparer une session
-    curl = curl_easy_init();
-    
-    // On vérifie toujours que l'init a fonctionné (sinon risque de crash)
-    if (curl)
-    {
-        // 2. Configuration : On colle les étiquettes sur le colis
-
-        // OPTION URL : On dit où on veut aller.
-        // .c_str() est OBLIGATOIRE car libcurl est en C, elle ne comprend pas std::string direct.
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-
-        // OPTION FONCTION : On désigne le "magasinier".
-        // On donne l'adresse de notre fonction statique _write_callback.
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _write_callback);
-
-        // OPTION DONNÉES : On désigne le "sac".
-        // On passe l'ADRESSE (&) de readBuffer pour que le callback puisse écrire DEDANS.
-        // C'est ici que le lien se fait entre ta variable locale et la librairie C.
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-
-		// --- NOUVEAU : GESTION HTTPS --- (essayer avec l'adresse : https://self-signed.badssl.com/)
-        
-        // 1. Désactiver la vérification du certificat (évite les erreurs "Certificat inconnu")
-        //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-        
-        // 2. Désactiver la vérification du nom d'hôte (optionnel mais conseillé en mode "bourrin")
-        //curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-
-        // -------------------------------
-
-        // 3. Exécution : C'est le grand saut !
-        // Le programme se met en pause ici le temps que le téléchargement se fasse.
-        // Pendant ce temps, curl va appeler _write_callback plusieurs fois.
-        res = curl_easy_perform(curl);
-
-        // (Optionnel mais conseillé : vérifier si res != CURLE_OK ici pour gérer les erreurs)
-
-        // 4. Nettoyage : On rend la mémoire prêtée par la librairie
-        curl_easy_cleanup(curl);
+    // Sécurité : Si l'init échoue, on arrête tout de suite.
+    if (!curl) {
+        std::cerr << BOLD_RED << "Erreur critique : Impossible d'initialiser CURL." << RESET << std::endl;
+        return "";
     }
+
+    // ---------------------------------------------------------
+    // 1. CONFIGURATION DU ROBOT
+    // ---------------------------------------------------------
     
-    // On retourne le sac désormais rempli de HTML !
+    // L'URL cible
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    
+    // Le Callback (Le magasinier)
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _write_callback);
+    
+    // Le Buffer (Le sac où ranger les données)
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+    
+    // Suivre les redirections (http -> https ou www.)
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+
+    // [ZONE DANGEREUSE] : Options SSL
+    // Décommenter pour accepter les certificats auto-signés (ex: self-signed.badssl.com)
+    // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+    // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+
+    // ---------------------------------------------------------
+    // 2. EXÉCUTION
+    // ---------------------------------------------------------
+    
+    res = curl_easy_perform(curl);
+
+    // ---------------------------------------------------------
+    // 3. GESTION DES ERREURS
+    // ---------------------------------------------------------
+    
+    if (res != CURLE_OK)
+    {
+        // En cas d'erreur, on vide le buffer pour ne pas renvoyer de données corrompues
+        readBuffer.clear();
+
+        std::cerr << BOLD_RED << "❌ Erreur Curl (" << res << ") : " 
+                  << curl_easy_strerror(res) << RESET << std::endl;
+
+        // Message spécifique pour le certificat SSL (Code 60)
+        if (res == CURLE_PEER_FAILED_VERIFICATION)
+        {
+            std::cerr << BOLD_YELLOW << "Erreur : Certificat SSL invalide." << std::endl;
+            std::cerr << "    Le site " << url << " possède un certificat auto-signé ou expiré." << std::endl;
+            std::cerr << "    Connexion refusée par défaut." << RESET << std::endl;
+        }
+    }
+
+    // ---------------------------------------------------------
+    // 4. NETTOYAGE
+    // ---------------------------------------------------------
+    
+    curl_easy_cleanup(curl);
+    
     return readBuffer;
 }
-
 // ------------------------------------------------------------------
 // PARTIE 2 : LE CALLBACK (Le "Magasinier")
 // ------------------------------------------------------------------
