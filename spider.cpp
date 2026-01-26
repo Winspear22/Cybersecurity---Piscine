@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:28:03 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/26 13:43:55 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/26 14:08:48 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,23 +46,40 @@ void Spider::parse_arguments(const std::vector<std::string>& args)
 
 void Spider::run()
 {
-	std::cout << BOLD_GREEN << "Spider run called" << RESET << std::endl;
-	// 1. Vérification de sécurité
-    if (_start_url.empty())
+    // 1. On télécharge le code HTML du site
+    std::cout << "Connexion à " << BOLD_YELLOW << _start_url << RESET << "..." << std::endl;
+    std::string html_content = _request(_start_url);
+
+    if (html_content.empty())
     {
-        std::cerr << BOLD_RED << "Erreur : Aucune URL n'a été fournie !" << RESET << std::endl;
+        std::cerr << BOLD_RED << "Echec : impossible de télécharger la page !" << RESET << std::endl;
         return;
     }
-	// 2. Appel de ta fonction _request (celle avec libcurl)
-    std::cout << "Connexion à " << _start_url << "..." << std::endl;
-    std::string html_content = _request(_start_url);
-	if (html_content.empty())
-		std::cout << BOLD_RED << "Echec : impossible de télécharger la page !" << std::endl;
-	else
-	{
-		std::cout << BOLD_GREEN << "Succès ! " << html_content.size() << " octets reçus." << RESET << std::endl;
-		std::cout << CYAN << html_content.substr(0, 500) << RESET << "..." << std::endl;	}
-	
+
+    // 2. On analyse le HTML pour trouver les images (remplit _image_urls)
+    _parse_html(html_content);
+
+    // 3. On boucle sur toutes les images trouvées pour les télécharger
+    std::cout << "Démarrage du téléchargement..." << std::endl;
+
+    // --- Initialisation de l'itérateur pour la boucle while ---
+    std::set<std::string>::iterator it = _image_urls.begin();
+
+    while (it != _image_urls.end())
+    {
+        std::string image_url = *it;
+        
+        // Téléchargement de l'image
+        std::string image_data = _request(image_url);
+        
+        // Sauvegarde sur le disque via le Saver
+        if (!image_data.empty())
+            _saver.save_file(image_data, image_url);
+        // --- Incrémentation manuelle de l'itérateur ---
+        ++it;
+    }
+    
+    std::cout << BOLD_GREEN << "Terminé !" << RESET << std::endl;
 }
 
 // ------------------------------------------------------------------
@@ -166,5 +183,21 @@ size_t Spider::_write_callback(void *contents, size_t size, size_t nmemb, void *
 
 void Spider::_parse_html(const std::string& html)
 {
-	
+	std::regex regex(R"(<img[^>]*src="([^"]*))");
+	std::sregex_iterator it(html.begin(), html.end(), regex);
+	std::sregex_iterator end;
+	while (it != end)
+	{
+		std::smatch match = *it;
+		if (match.size() > 1)
+		{
+			std::string url = match[1];
+			if (url.find("http") != std::string::npos)
+				_image_urls.insert(url);
+			else
+				_image_urls.insert(_start_url + url);
+		}
+		++it;
+	}
+	std::cout << BOLD_CYAN << "🔍 Analyse terminée : " << _image_urls.size() << " images trouvées." << RESET << std::endl;
 }
