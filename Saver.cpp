@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 12:56:19 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/26 13:25:19 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/26 13:36:21 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,16 @@ Saver::~Saver()
 
 void Saver::save_file(const std::string& data, const std::string& url)
 {
-	(void)data;
-	(void)url;
+	std::string fileName = this->_extract_filename(url);
+	// On utilise le "pipe" | pour additionner les options
+	std::ofstream file(fileName.c_str(), std::ios::out | std::ios::binary);	
+	if (!file.is_open())
+	{
+		std::cerr << BOLD_RED << "Error: could not open file " << fileName << RESET << std::endl;
+		return ;
+	}
+	file.write(data.c_str(), data.size());
+	file.close();
 }
 
 std::string Saver::_extract_filename(const std::string& url)
