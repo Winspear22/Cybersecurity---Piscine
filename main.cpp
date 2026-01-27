@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:27:51 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/26 14:27:50 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/27 19:07:30 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,12 @@ int main(int argc, char **argv)
 	if (global_res != 0)
 		std::cout << RED << "Error: " << curl_easy_strerror(global_res) << RESET << std::endl;
 	// 2. LOGIQUE SPIDER (Juste le minimum pour tester)
-	const std::vector<std::string> args;
-    if (argc > 1)
-    {
-        std::vector<std::string> args(argv + 1, argv + argc);
-        
+    if (argc > 1 && argc < 7)
+    {        
         Spider spider;              // Création
-        spider.parse_arguments(args); // Configuration
+        spider.addArgumentsToVector(argv); // Configuration
+		if (spider.argsParser() == FAILURE)
+			return (FAILURE);
         spider.run();               // Action !
     }
     else

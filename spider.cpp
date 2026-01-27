@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:28:03 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/27 18:04:41 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/27 20:38:33 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 
 Spider::Spider()
 {
+	this->_recursive = false;
+	this->_max_depth = 5;
+	this->_output_dir_path = "./data/";
 	std::cout << BOLD_GREEN << "Spider constructor called" << RESET << std::endl;
 }
 
@@ -35,13 +38,66 @@ Spider::~Spider()
 	std::cout << BOLD_RED << "Spider destructor called" << RESET << std::endl;
 }
 
-void Spider::parse_arguments(const std::vector<std::string>& args)
+void Spider::addArgumentsToVector(char **argv)
 {
-	if (args.empty())
-		return ;
-	this->_start_url = args.back();
+	int i;
+
+	i = 1;
+	while (argv[i] != NULL)
+	{
+		this->_args.push_back(argv[i]);
+		i++;
+	}
 	std::cout << BOLD_GREEN << "Spider parse_arrguments called" << RESET << std::endl;
 	std::cout << "URL cible définie : " << BOLD_YELLOW << _start_url << RESET << std::endl;
+}
+
+bool Spider::argsParser(void)
+{
+	std::vector<std::string>::iterator it;
+
+	it = this->_args.begin();
+	while (it != this->_args.end())
+	{
+		if (*it == "-r")
+			this->_recursive = true;
+		else if (*it == "-l")
+		{
+			if (it + 1 == this->_args.end())
+				return print_error("Error : -l option requires an argument");
+			if (it + 1 != this->_args.end())
+			{
+				it++;
+				try
+				{
+					this->_max_depth = std::stoi(*it);
+					if (this->_max_depth < 0)
+						return print_error("Error : max depth must be a positive integer");
+				} 
+				catch (const std::exception& e)
+				{
+					    std::string msg = "Error : invalid depth value (" + std::string(e.what()) + ")";
+						return print_error(msg);
+				}
+			}
+		}
+		else if (*it == "-p")
+		{
+			if (it + 1 == this->_args.end())
+				return print_error("Error : -p option requires an argument");
+			if (it + 1 != this->_args.end())
+			{
+				it++;
+				this->_output_dir_path = *it;
+			}
+		}
+		else
+		{
+			this->_start_url = *it;
+		}
+		it++;
+	}
+	return print_success("Arguments parsed successfully");
 }
 
 void Spider::run()
