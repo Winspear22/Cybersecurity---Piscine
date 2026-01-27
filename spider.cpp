@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:28:03 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/27 20:38:33 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/27 20:47:20 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,8 @@ bool Spider::argsParser(void)
 		}
 		else
 		{
+			if (it + 1 != this->_args.end())
+				return print_error("Error : URL must be the last argument (flags come first)");
 			this->_start_url = *it;
 		}
 		it++;
