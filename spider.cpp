@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:28:03 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/27 20:47:20 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/27 21:29:17 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ void Spider::run()
     }
 
     // 2. On analyse le HTML pour trouver les images (remplit _image_urls)
-    _parse_html(html_content);
+    this->_parse_html(html_content);
 
     // 3. On boucle sur toutes les images trouvées pour les télécharger
     std::cout << "Démarrage du téléchargement..." << std::endl;
@@ -297,4 +297,33 @@ std::string Spider::_resolve_url(const std::string& base_url, const std::string&
         return domain + link_url;
     else
         return path + link_url;
+}
+
+bool Spider::_is_valid_extension(const std::string& url)
+{
+	size_t pos;
+	size_t i;
+	std::vector<std::string> validExtensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp"};
+
+	pos = url.find_last_of('.');
+	if (pos == std::string::npos)
+		return (FAILURE);
+
+	std::string extension = url.substr(pos);
+	
+	i = 0;
+	while (i < extension.length())
+	{
+		extension[i] = std::tolower(extension[i]);
+		i++;
+	}
+
+	i = 0;
+	while (i < validExtensions.size())
+	{
+		if (extension == validExtensions[i])
+			return (SUCCESS);
+		i++;
+	}
+	return (FAILURE);
 }

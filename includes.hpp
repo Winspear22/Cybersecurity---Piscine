@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:16:38 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/27 19:15:14 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/27 21:16:58 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@
 # include <regex>
 # include <climits>
 
-# define SUCCESS	0
-# define FAILURE	1
+# define SUCCESS	true
+# define FAILURE	false
 # define INFO		2
 
 // --- RESET (Indispensable pour arrêter la couleur) ---

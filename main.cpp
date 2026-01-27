@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:27:51 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/27 19:07:30 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/27 21:17:02 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
         Spider spider;              // Création
         spider.addArgumentsToVector(argv); // Configuration
 		if (spider.argsParser() == FAILURE)
-			return (FAILURE);
+			return (1);
         spider.run();               // Action !
     }
     else
