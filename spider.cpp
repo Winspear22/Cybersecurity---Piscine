@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:28:03 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/26 14:38:24 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/27 18:04:41 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,11 +191,13 @@ void Spider::_parse_html(const std::string& html)
 		std::smatch match = *it;
 		if (match.size() > 1)
 		{
-			std::string url = match[1];
-			if (url.find("http") != std::string::npos)
-				_image_urls.insert(url);
-			else
-				_image_urls.insert(_start_url + url);
+			std::string raw_url = match[1];
+			// On nettoie l'URL
+			std::string clean_url = _resolve_url(_start_url, raw_url);
+			
+			// Si le résultat est valide (commence par http), on l'ajoute
+			if (clean_url.find("http") == 0)
+				_image_urls.insert(clean_url);
 		}
 		++it;
 	}
@@ -208,4 +210,33 @@ std::string Spider::_resolve_url(const std::string& base_url, const std::string&
 		return link_url;
 	else if (link_url.find("//") == 0)
 		return "http:" + link_url;
+	
+	// 1. Déclarations
+	std::string domain;
+	std::string path;
+	
+	// 2. Extraction du DOMAINE
+	size_t protocolPos = base_url.find("://");
+	// Si on ne trouve pas le protocole, on suppose que c'est du http implicite ou qu'on ne peut rien faire
+	if (protocolPos == std::string::npos) 
+		return link_url; // Cas fallback
+
+	size_t domainEnds = base_url.find("/", protocolPos + 3);
+	if (domainEnds != std::string::npos)
+		domain = base_url.substr(0, domainEnds);
+	else
+		domain = base_url;
+	
+	// 3. Extraction du PATH
+	size_t lastSlash = base_url.find_last_of("/");
+	if (lastSlash != std::string::npos && lastSlash > protocolPos + 2)
+        path = base_url.substr(0, lastSlash + 1);
+    else
+        path = base_url + "/";
+
+	// 4. Assemblage
+    if (link_url.find("/") == 0)
+        return domain + link_url;
+    else
+        return path + link_url;
 }
