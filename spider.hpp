@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:27:43 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/27 21:04:21 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/27 21:36:00 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ class Spider
 		bool						_recursive; //-r
 		int							_max_depth; //-l
 		std::string					_output_dir_path; //-p
+		int							_invalid_images_count;
 		
 		
 		std::string					_request(const std::string& url);

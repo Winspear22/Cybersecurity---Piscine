@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:28:03 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/27 21:29:17 by adnen            ###   ########.fr       */
+/*   Updated: 2026/01/27 21:37:07 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ Spider::Spider()
 	this->_recursive = false;
 	this->_max_depth = 5;
 	this->_output_dir_path = "./data/";
+	this->_invalid_images_count = 0;
 	std::cout << BOLD_GREEN << "Spider constructor called" << RESET << std::endl;
 }
 
@@ -137,7 +138,14 @@ void Spider::run()
         ++it;
     }
     
-    std::cout << BOLD_GREEN << "Terminé !" << RESET << std::endl;
+    if (_image_urls.empty() && _invalid_images_count > 0)
+		std::cerr << BOLD_RED << "Error, TOUTES les images (" << _invalid_images_count << ") étaient invalides." << RESET << std::endl;
+	else
+	{
+		std::cout << BOLD_GREEN << "Terminé !" << RESET << std::endl;
+		if (_invalid_images_count > 0)
+			std::cout << BOLD_YELLOW << "Succès ! Mais il y'avait " << _invalid_images_count << " images au format invalide." << RESET << std::endl;
+	}
 }
 
 // ------------------------------------------------------------------
@@ -255,7 +263,12 @@ void Spider::_parse_html(const std::string& html)
 			
 			// Si le résultat est valide (commence par http), on l'ajoute
 			if (clean_url.find("http") == 0)
-				_image_urls.insert(clean_url);
+			{
+				if (_is_valid_extension(clean_url))
+					_image_urls.insert(clean_url);
+				else
+					_invalid_images_count++;
+			}
 		}
 		++it;
 	}
