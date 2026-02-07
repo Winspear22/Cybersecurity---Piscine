@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:28:03 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/27 21:42:59 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 00:20:34 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -273,6 +273,83 @@ void Spider::_parse_html(const std::string& html)
 		++it;
 	}
 	std::cout << BOLD_CYAN << "🔍 Analyse terminée : " << _image_urls.size() << " images trouvées." << RESET << std::endl;
+}
+
+bool Spider::_is_safe_to_scan(std::string& url)
+{
+	size_t i;
+	
+	// 1. On nettoie les ancres (#section)
+	size_t hash_pos = url.find('#');
+	if (hash_pos != std::string::npos)
+		url = url.substr(0, hash_pos);
+
+	// 2. Vérification du protocole (HTTP/HTTPS uniquement)
+	if (url.find("http") != 0 && url.find("https") != 0)
+		return (print_error("[IGNORÉ] Protocole invalide : " + url));
+
+	// 3. Vérification des extensions interdites
+	std::vector<std::string> banned_exts = {".pdf", ".zip", ".rar", ".tar", ".xml", ".json", ".iso", ".css", ".js"};
+	
+	i = 0;
+	while (i < banned_exts.size())
+	{
+		if (url.length() >= banned_exts[i].length() && 
+			url.compare(url.length() - banned_exts[i].length(), banned_exts[i].length(), banned_exts[i]) == 0)
+		{
+			return (print_error("[IGNORÉ] Extension interdite (" + banned_exts[i] + ") : " + url));
+		}
+		i++;
+	}
+
+	// 4. Vérification de l'historique (Pas de message ici, sinon trop de spam)
+	if (_visited_urls.find(url) != _visited_urls.end())
+		return (FAILURE);
+
+	// 5. Vérification du Domaine
+	std::string start_domain = _start_url;
+	size_t protocol_end = start_domain.find("://");
+	if (protocol_end != std::string::npos)
+		start_domain = start_domain.substr(protocol_end + 3);
+	size_t path_start = start_domain.find("/");
+	if (path_start != std::string::npos)
+		start_domain = start_domain.substr(0, path_start);
+
+	if (url.find(start_domain) == std::string::npos)
+		return (print_error("[IGNORÉ] Hors domaine : " + url));
+
+	return (SUCCESS);
+}
+
+void Spider::_parse_links(const std::string& html_content, int current_depth)
+{
+	std::regex regex(R"(<a[^>]*href=["']([^"']+)["'])");
+	std::sregex_iterator it(html_content.begin(), html_content.end(), regex);
+	std::sregex_iterator end;
+	
+	while (it != end)
+	{
+		std::smatch match = *it;
+		if (match.size() > 1)
+		{
+			std::string raw_url = match[1];
+			std::string clean_url = this->_resolve_url(_start_url, raw_url);
+			
+			if (this->_is_safe_to_scan(clean_url) == SUCCESS)
+			{
+				if (this->_visited_urls.find(clean_url) == this->_visited_urls.end())
+				{
+					// 1. CRUCIAL : On le marque comme visité pour ne plus le refaire
+					this->_visited_urls.insert(clean_url);
+					// 2. IMPORTANT : On ajoute avec la profondeur + 1
+					this->_url_queue.push_back(std::make_pair(clean_url, current_depth + 1));
+					// 3. OPTIONNEL : Un petit log pour suivre
+					std::cout << "  [BFS] Ajout lien (Prof " << current_depth + 1 << ") : " << clean_url << std::endl;					
+				}
+			}
+		}
+		++it;
+	}
 }
 
 std::string Spider::_resolve_url(const std::string& base_url, const std::string& link_url)

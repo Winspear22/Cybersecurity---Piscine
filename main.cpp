@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:27:51 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/27 21:17:02 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/07 17:19:35 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,7 @@ int main(int argc, char **argv)
         spider.run();               // Action !
     }
     else
-    {
         std::cout << "Usage: ./spider URL" << std::endl;
-    }
 	// 3. CLEANUP GLOBAL
     // On éteint le moteur avant de partir (INDISPENSABLE)
     curl_global_cleanup();
