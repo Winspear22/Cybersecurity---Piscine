@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:28:03 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 14:39:40 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 14:54:33 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,24 @@ Spider::Spider(const Spider &src)
 Spider &Spider::operator=(const Spider &src)
 {
 	std::cout << BOLD_GREEN << "Spider copy assignment operator called" << RESET << std::endl;
-	if (this != &src) {}
+	if (this != &src)
+	{
+		this->_start_url = src._start_url;
+		this->_image_urls = src._image_urls;
+		this->_args = src._args;
+		this->_url_queue = src._url_queue;
+		this->_visited_urls = src._visited_urls;
+		this->_recursive = src._recursive;
+		this->_max_depth = src._max_depth;
+		this->_output_dir_path = src._output_dir_path;
+		this->_invalid_images_count = src._invalid_images_count;
+		
+		// Les objets helpers (stateless pour l'instant)
+		this->_urlHelper = src._urlHelper;
+		this->_downloader = src._downloader;
+		this->_parser = src._parser;
+		this->_saver = src._saver;
+	}
 	return *this;
 }
 
