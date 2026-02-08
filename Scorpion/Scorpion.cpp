@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 14:50:17 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 22:41:21 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 22:44:56 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,8 +99,7 @@ void Scorpion::_weightAnalysis(const struct stat &st) {
             << std::endl;
 }
 
-void Scorpion::_findExifBlock(std::ifstream &file)
-{
+void Scorpion::_findExifBlock(std::ifstream &file) {
   /*
      METHODE 1 : BRUTE FORCE (Active)
      Scanner chaque octet jusqu'à trouver FF E1.
@@ -108,28 +107,23 @@ void Scorpion::_findExifBlock(std::ifstream &file)
 
   file.seekg(2, std::ios::beg);
   char byte;
-  while (file.get(byte))
-  {
-    if ((unsigned char)byte == 0xFF)
-	{
-      if (file.get(byte))
-	  {
-        if ((unsigned char)byte == 0xE1)
-		{
+  while (file.get(byte)) {
+    if ((unsigned char)byte == 0xFF) {
+      if (file.get(byte)) {
+        if ((unsigned char)byte == 0xE1) {
           // On a trouvé le marker FF E1 !
           // Les 2 octets suivants sont la taille (on les ignore pour l'instant)
           file.seekg(2, std::ios::cur);
 
           char header[6];
           file.read(header, 6);
-          if (std::string(header, 4) == "Exif")
-		  {
-            std::cout << BOLD_CYAN << "  [EXIF]   Found APP1 segment" << RESET << std::endl;
+          if (std::string(header, 4) == "Exif") {
+            std::cout << BOLD_CYAN << "  [EXIF]   Found APP1 segment" << RESET
+                      << std::endl;
             this->_parseTiff(file);
             return;
           }
-        }
-		else if ((unsigned char)byte == 0xDA)
+        } else if ((unsigned char)byte == 0xDA)
           // SOS : Start Of Scan = Début de l'image compressée
           break;
       }
@@ -280,32 +274,90 @@ void Scorpion::_parseTiff(std::ifstream &file)
     unsigned char tagEntry[12];
     file.read((char *)tagEntry, 12);
 
-    // Les 2 premiers octets sont l'ID du Tag
-    unsigned short tagID = 0;
-    if (isLittleEndian)
-      tagID = tagEntry[0] + (tagEntry[1] * 256);
-    else
-      tagID = tagEntry[1] + (tagEntry[0] * 256);
+    // Appeler la fonction qui lit et affiche la valeur du tag
+    this->_readTagValue(file, tagEntry, tiffStart, isLittleEndian);
 
-    // Affichage basique de l'ID
-    // On peut ajouter des cas spéciaux pour les IDs connus
-    if (tagID == 0x010F) // Manufacturer
-      std::cout << GREEN << "  [TAG]    0x010F : Manufacturer" << RESET
-                << std::endl;
-    else if (tagID == 0x0110) // Model
-      std::cout << GREEN << "  [TAG]    0x0110 : Camera Model" << RESET
-                << std::endl;
-    else if (tagID == 0x0132) // DateTime
-      std::cout << GREEN << "  [TAG]    0x0132 : Date/Time" << RESET
-                << std::endl;
-    else if (tagID == 0x8769) // EXIF Sub-IFD
-      std::cout << YELLOW
-                << " [TAG]    0x8769 : EXIF Sub-IFD (more data inside)" << RESET
-                << std::endl;
-    else if (tagID == 0x8825) // GPS Info
-      std::cout << YELLOW << " [TAG]    0x8825 : GPS Info" << RESET
-                << std::endl;
     i = i + 1;
   }
-  std::cout << BOLD_GREEN << " [TIFF]   Parsing complete!" << RESET << std::endl;
+  std::cout << BOLD_GREEN << "  [TIFF]   Parsing complete!" << RESET
+            << std::endl;
+}
+
+void Scorpion::_readTagValue(std::ifstream &file, unsigned char *tagEntry,
+                             long tiffStart, bool isLittleEndian) {
+  // Sauvegarder la position actuelle pour y revenir après
+  long currentPos = file.tellg();
+
+  // Lire l'ID du tag (octets 0-1)
+  unsigned short tagID = 0;
+  if (isLittleEndian)
+    tagID = tagEntry[0] + (tagEntry[1] * 256);
+  else
+    tagID = tagEntry[1] + (tagEntry[0] * 256);
+
+  // Lire le type de données (octets 2-3)
+  unsigned short dataType = 0;
+  if (isLittleEndian)
+    dataType = tagEntry[2] + (tagEntry[3] * 256);
+  else
+    dataType = tagEntry[3] + (tagEntry[2] * 256);
+
+  // Lire le nombre d'éléments (octets 4-7)
+  unsigned long count = 0;
+  if (isLittleEndian) {
+    count = tagEntry[4];
+    count = count + (tagEntry[5] * 256);
+    count = count + (tagEntry[6] * 256 * 256);
+    count = count + (tagEntry[7] * 256 * 256 * 256);
+  } else {
+    count = tagEntry[7];
+    count = count + (tagEntry[6] * 256);
+    count = count + (tagEntry[5] * 256 * 256);
+    count = count + (tagEntry[4] * 256 * 256 * 256);
+  }
+
+  // Lire l'offset ou la valeur directe (octets 8-11)
+  unsigned long valueOffset = 0;
+  if (isLittleEndian) {
+    valueOffset = tagEntry[8];
+    valueOffset = valueOffset + (tagEntry[9] * 256);
+    valueOffset = valueOffset + (tagEntry[10] * 256 * 256);
+    valueOffset = valueOffset + (tagEntry[11] * 256 * 256 * 256);
+  } else {
+    valueOffset = tagEntry[11];
+    valueOffset = valueOffset + (tagEntry[10] * 256);
+    valueOffset = valueOffset + (tagEntry[9] * 256 * 256);
+    valueOffset = valueOffset + (tagEntry[8] * 256 * 256 * 256);
+  }
+
+  // On ne traite que les tags de type ASCII (type 2) pour l'instant
+  if (dataType == 2) {
+    // Pour le texte, aller lire à l'offset
+    file.seekg(tiffStart + valueOffset, std::ios::beg);
+
+    char textBuffer[256];
+    file.read(textBuffer, count);
+    textBuffer[count] = '\0'; // Terminer la chaîne
+
+    // Afficher selon l'ID du tag
+    if (tagID == 0x010F)
+      std::cout << GREEN << "  [TAG]    Manufacturer : " << textBuffer << RESET
+                << std::endl;
+    else if (tagID == 0x0110)
+      std::cout << GREEN << "  [TAG]    Camera Model : " << textBuffer << RESET
+                << std::endl;
+    else if (tagID == 0x0132)
+      std::cout << GREEN << "  [TAG]    Date/Time : " << textBuffer << RESET
+                << std::endl;
+  } else if (tagID == 0x8769)
+    std::cout << YELLOW
+              << "  [TAG]    0x8769 : EXIF Sub-IFD (offset: " << valueOffset
+              << ")" << RESET << std::endl;
+  else if (tagID == 0x8825)
+    std::cout << YELLOW
+              << "  [TAG]    0x8825 : GPS Info (offset: " << valueOffset << ")"
+              << RESET << std::endl;
+
+  // Revenir à la position d'origine
+  file.seekg(currentPos, std::ios::beg);
 }
