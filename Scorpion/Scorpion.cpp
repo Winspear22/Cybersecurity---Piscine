@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 14:50:17 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 15:45:14 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 15:48:38 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ Scorpion &Scorpion::operator=(const Scorpion &src)
 	std::cout << PURPLE << "Scorpion copy assignment operator called" << RESET << std::endl;
 }
 
-void 	Scorpion::FileAnalysis(const std::string& filename)
+void 	Scorpion::FileIdentification(const std::string& filename)
 {
 	std::ifstream file(filename, std::ios::binary);
 	if (!file.is_open())
