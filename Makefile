@@ -6,56 +6,71 @@
 #    By: adnen <adnen@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/26 00:46:32 by adnen             #+#    #+#              #
-#    Updated: 2026/02/08 14:41:30 by adnen            ###   ########.fr        #
+#    Updated: 2026/02/08 15:52:36 by adnen            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # --- VARIABLES ---
-NAME        = spider
+NAME_SPIDER    = spider
+NAME_SCORPION  = scorpion
 
-# Liste tes fichiers ici
-SRCS        = Spider/main.cpp Spider/Spider.cpp Spider/Saver.cpp Spider/ErrorsHandler.cpp Spider/UrlHelper.cpp Spider/Downloader.cpp Spider/Parser.cpp
+# Sources Spider
+SRCS_SPIDER    = Spider/main.cpp Spider/Spider.cpp Spider/Saver.cpp Spider/ErrorsHandler.cpp \
+                 Spider/UrlHelper.cpp Spider/Downloader.cpp Spider/Parser.cpp
+
+# Sources Scorpion
+SRCS_SCORPION  = Scorpion/main.cpp Scorpion/Scorpion.cpp
 
 # Fichiers Headers
-INCLUDES    = Spider/includes.hpp Spider/Spider.hpp Spider/Saver.hpp
+INCLUDES       = Spider/includes.hpp Spider/Spider.hpp Spider/Saver.hpp \
+                 Scorpion/Scorpion.hpp
 
-OBJS        = $(SRCS:.cpp=.o)
+OBJS_SPIDER    = $(SRCS_SPIDER:.cpp=.o)
+OBJS_SCORPION  = $(SRCS_SCORPION:.cpp=.o)
 
-CC          = g++
-FLAGS       = -Wall -Wextra -Werror -std=c++17 -I./Spider
+CC             = g++
+FLAGS          = -Wall -Wextra -Werror -std=c++17 -I./Spider -I./Scorpion
 
-# [NOUVEAU] : On ajoute le flag pour linker la librairie curl
-LIBS        = -lcurl
+# Flag pour linker la librairie curl (uniquement pour spider)
+LIBS_SPIDER    = -lcurl
 
 # --- COULEURS ---
-GREEN       = \033[1;32m
-RESET       = \033[0m
+GREEN          = \033[1;32m
+CYAN           = \033[1;36m
+RESET          = \033[0m
 
 # --- RÈGLES ---
 
-all: $(NAME)
+all: $(NAME_SPIDER) $(NAME_SCORPION)
 
-# C'est ici que la magie opère
-$(NAME): $(OBJS)
-	@echo "$(GREEN)Création de l'exécutable $(NAME)...$(RESET)"
-	# [MODIFIÉ] : On ajoute $(LIBS) à la fin de la commande
-	@$(CC) $(FLAGS) $(OBJS) -o $(NAME) $(LIBS)
-	@echo "$(GREEN)Nettoyage automatique des fichiers objets (.o)...$(RESET)"
-	@rm -f $(OBJS) 
-	@echo "$(GREEN)✅ Terminé !$(RESET)"
+# Règle pour Spider
+$(NAME_SPIDER): $(OBJS_SPIDER)
+	@echo "$(GREEN)Création de l'exécutable $(NAME_SPIDER)...$(RESET)"
+	@$(CC) $(FLAGS) $(OBJS_SPIDER) -o $(NAME_SPIDER) $(LIBS_SPIDER)
+	@echo "$(GREEN)✅ Spider Terminé !$(RESET)"
+
+# Règle pour Scorpion
+$(NAME_SCORPION): $(OBJS_SCORPION)
+	@echo "$(CYAN)Création de l'exécutable $(NAME_SCORPION)...$(RESET)"
+	@$(CC) $(FLAGS) $(OBJS_SCORPION) -o $(NAME_SCORPION)
+	@echo "$(CYAN)✅ Scorpion Terminé !$(RESET)"
 
 # Compilation des .cpp en .o
 %.o: %.cpp
 	@$(CC) $(FLAGS) -c $< -o $@
 
-# Clean ne sert plus à grand chose car on supprime déjà les .o, 
-# mais on le garde par convention.
+# Rules spécifiques
+spider: $(NAME_SPIDER)
+scorpion: $(NAME_SCORPION)
+
 clean:
-	@rm -f $(OBJS)
+	@rm -f $(OBJS_SPIDER) $(OBJS_SCORPION)
+	@echo "Objets supprimés."
 
 fclean: clean
-	@rm -f $(NAME)
+	@rm -f $(NAME_SPIDER) $(NAME_SCORPION)
+	@echo "Exécutables supprimés."
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re spider scorpion
