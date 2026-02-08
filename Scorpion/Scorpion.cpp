@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 14:50:17 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 21:31:22 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 21:33:09 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,8 @@ void Scorpion::_weightAnalysis(const struct stat &st)
             << std::endl;
 }
 
-void Scorpion::_findExifBlock(std::ifstream &file) {
+void Scorpion::_findExifBlock(std::ifstream &file)
+{
   /*
      METHODE 1 : BRUTE FORCE (Active)
      Scanner chaque octet jusqu'à trouver FF E1.
@@ -119,27 +120,32 @@ void Scorpion::_findExifBlock(std::ifstream &file) {
 
   file.seekg(2, std::ios::beg);
   char byte;
-  while (file.get(byte)) {
-    if ((unsigned char)byte == 0xFF) {
-      if (file.get(byte)) {
-        if ((unsigned char)byte == 0xE1) {
+  while (file.get(byte))
+  {
+    if ((unsigned char)byte == 0xFF)
+	{
+      if (file.get(byte))
+	  {
+        if ((unsigned char)byte == 0xE1)
+		{
           // On a trouvé le marker FF E1 !
           // Les 2 octets suivants sont la taille (on les ignore pour l'instant)
           file.seekg(2, std::ios::cur);
 
           char header[6];
           file.read(header, 6);
-          if (std::string(header, 4) == "Exif") {
+          if (std::string(header, 4) == "Exif")
+		  {
             std::cout << BOLD_CYAN
                       << "  [EXIF]   Found APP1 segment (Brute Force)" << RESET
                       << std::endl;
             // TODO: Lancer le parsing TIFF ici
             return;
           }
-        } else if ((unsigned char)byte == 0xDA) {
+        }
+		else if ((unsigned char)byte == 0xDA)
           // SOS : Start Of Scan = Début de l'image compressée
           break;
-        }
       }
     }
   }
