@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 12:56:16 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 00:56:58 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 01:22:43 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ class Saver
 		Saver &operator=(const Saver &src);
 		~Saver();
 
-		void save_file(const std::string& data, const std::string& url);
+// void save_file(const std::string& data, const std::string& url);
+		void save_file(const std::string& data, const std::string& url, const std::string& output_dir);
 
 	private:
 		std::string _extract_filename(const std::string& url);

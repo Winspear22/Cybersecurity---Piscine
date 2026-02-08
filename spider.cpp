@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:28:03 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 01:05:57 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 01:23:36 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,7 @@ void Spider::run()
         usleep(10000); // 10ms entre chaque image
         
         if (!image_data.empty())
-            _saver.save_file(image_data, image_url);
+            _saver.save_file(image_data, image_url, _output_dir_path);
         
         ++it;
     }
