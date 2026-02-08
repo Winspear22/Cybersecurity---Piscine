@@ -1,1 +1,6 @@
 spider
+scorpion
+data/
+test_mix/
+test_double/
+*.o

@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 14:50:17 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 15:48:38 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 16:12:17 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,25 @@
 
 Scorpion::Scorpion()
 {
-	std::cout << PURPLE << "Scorpion constructor called" << RESET << std::endl;
+	std::cout << MAGENTA << "Scorpion constructor called" << RESET << std::endl;
 }
 
 Scorpion::~Scorpion()
 {
-	std::cout << PURPLE << "Scorpion destructor called" << RESET << std::endl;
+	std::cout << MAGENTA << "Scorpion destructor called" << RESET << std::endl;
 }
 
 Scorpion::Scorpion(const Scorpion &src)
 {
-	std::cout << PURPLE << "Scorpion copy constructor called" << RESET << std::endl;
+	std::cout << MAGENTA << "Scorpion copy constructor called" << RESET << std::endl;
+    *this = src;
 }
 
 Scorpion &Scorpion::operator=(const Scorpion &src)
 {
-	std::cout << PURPLE << "Scorpion copy assignment operator called" << RESET << std::endl;
+	std::cout << MAGENTA << "Scorpion copy assignment operator called" << RESET << std::endl;
+    (void)src;
+    return *this;
 }
 
 void 	Scorpion::FileIdentification(const std::string& filename)
@@ -40,6 +43,7 @@ void 	Scorpion::FileIdentification(const std::string& filename)
 		std::cerr << BOLD_RED << "Error: could not open " << filename << RESET << std::endl;
 		return ;
 	}
+
 	unsigned char headOfFile[12];
 	file.read((char*)headOfFile, 12);
 	if (file.gcount() < 2)
@@ -65,6 +69,5 @@ void 	Scorpion::FileIdentification(const std::string& filename)
 	}
 	else
 		std::cout << RED << "It's not a valid image file !" << RESET << std::endl;
-	
 }
 

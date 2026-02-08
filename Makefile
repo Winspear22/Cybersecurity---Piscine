@@ -6,7 +6,7 @@
 #    By: adnen <adnen@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/26 00:46:32 by adnen             #+#    #+#              #
-#    Updated: 2026/02/08 15:52:36 by adnen            ###   ########.fr        #
+#    Updated: 2026/02/08 16:03:10 by adnen            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,21 +47,19 @@ all: $(NAME_SPIDER) $(NAME_SCORPION)
 $(NAME_SPIDER): $(OBJS_SPIDER)
 	@echo "$(GREEN)Création de l'exécutable $(NAME_SPIDER)...$(RESET)"
 	@$(CC) $(FLAGS) $(OBJS_SPIDER) -o $(NAME_SPIDER) $(LIBS_SPIDER)
-	@echo "$(GREEN)✅ Spider Terminé !$(RESET)"
+	@rm -f $(OBJS_SPIDER)
+	@echo "$(GREEN)✅ Spider Terminé ! (Objets nettoyés)$(RESET)"
 
 # Règle pour Scorpion
 $(NAME_SCORPION): $(OBJS_SCORPION)
 	@echo "$(CYAN)Création de l'exécutable $(NAME_SCORPION)...$(RESET)"
 	@$(CC) $(FLAGS) $(OBJS_SCORPION) -o $(NAME_SCORPION)
-	@echo "$(CYAN)✅ Scorpion Terminé !$(RESET)"
+	@rm -f $(OBJS_SCORPION)
+	@echo "$(CYAN)✅ Scorpion Terminé ! (Objets nettoyés)$(RESET)"
 
 # Compilation des .cpp en .o
 %.o: %.cpp
 	@$(CC) $(FLAGS) -c $< -o $@
-
-# Rules spécifiques
-spider: $(NAME_SPIDER)
-scorpion: $(NAME_SCORPION)
 
 clean:
 	@rm -f $(OBJS_SPIDER) $(OBJS_SCORPION)
@@ -73,4 +71,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re spider scorpion
+.PHONY: all clean fclean re

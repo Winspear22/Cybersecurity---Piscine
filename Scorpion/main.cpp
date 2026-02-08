@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 15:53:12 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 15:59:44 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 16:01:17 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,9 @@ int main(int argc, char **argv)
 	else
 	{
 		Scorpion scorpion;
-		while (++i <= argc)
+		while (++i < argc)
 		{
-			std::cout << "\n--- Analyzing: " << argv[i] << " ---" << std::endl;
+			std::cout << BOLD_CYAN << "\n--- Analyzing: " << argv[i] << " ---" << RESET << std::endl;
 			scorpion.FileIdentification(argv[i]);
 		}
 	}
