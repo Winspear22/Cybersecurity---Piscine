@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 14:50:17 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 23:06:36 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 23:14:50 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,43 +132,6 @@ void Scorpion::_findExifBlock(std::ifstream &file) {
   std::cout << YELLOW << "  [EXIF]   No metadata found" << RESET << std::endl;
 }
 
-/*
-   METHODE 2 : SAUT DE SEGMENTS (Optimisée - À décommenter pour tester)
-   Lire la taille des segments pour sauter par dessus.
-
-void Scorpion::_findExifBlock_Optimized(std::ifstream &file)
-{
-  file.seekg(2, std::ios::beg);
-  unsigned char marker[2];
-  while (file.read((char*)marker, 2))
-  {
-    if (marker[0] != 0xFF) break;
-
-    if (marker[1] == 0xE1)
-    {
-      unsigned char sizeBytes[2];
-      file.read((char*)sizeBytes, 2);
-      unsigned char exifHeader[6];
-      file.read((char*)exifHeader, 6);
-      if (std::string((char*)exifHeader, 4) == "Exif")
-      {
-        std::cout << BOLD_CYAN << "  [EXIF]   Found APP1 segment (Segment Jump)"
-<< RESET << std::endl; this->_parseTiff(file); return;
-      }
-    }
-
-    unsigned char sizeBytes[2];
-    if (!file.read((char*)sizeBytes, 2)) break;
-
-    unsigned short size = (sizeBytes[0] << 8) | sizeBytes[1];
-    file.seekg(size - 2, std::ios::cur);
-
-    if (marker[1] == 0xDA) break;
-  }
-  std::cout << YELLOW << "  [EXIF]   No metadata found" << RESET << std::endl;
-}
-*/
-
 void Scorpion::_parseTiff(std::ifstream &file) {
   // ============================================
   // ÉTAPE 1 : Sauvegarder le début du bloc TIFF
@@ -281,8 +244,8 @@ void Scorpion::_parseIFD(std::ifstream &file, long tiffStart,
   }
 }
 
-void Scorpion::_readTagValue(std::ifstream &file, unsigned char *tagEntry,
-                             long tiffStart, bool isLittleEndian) {
+void Scorpion::_readTagValue(std::ifstream &file, unsigned char *tagEntry, long tiffStart, bool isLittleEndian)
+{
   // Sauvegarder la position actuelle pour y revenir après
   long currentPos = file.tellg();
 
