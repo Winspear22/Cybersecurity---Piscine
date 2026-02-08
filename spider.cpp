@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:28:03 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 00:20:34 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 00:56:58 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,46 +105,72 @@ bool Spider::argsParser(void)
 
 void Spider::run()
 {
-    // 1. On télécharge le code HTML du site
-    std::cout << "Connexion à " << BOLD_YELLOW << _start_url << RESET << "..." << std::endl;
-    std::string html_content = _request(_start_url);
+    std::cout << BOLD_GREEN << "🕷️ Démarrage du Spider sur : " << this->_start_url << RESET << std::endl;
 
-    if (html_content.empty())
+    // 1. Initialisation : On met l'URL de départ dans la file d'attente
+    this->_url_queue.push_back(std::make_pair(_start_url, 0));
+    this->_visited_urls.insert(_start_url);
+
+    // 2. BOUCLE PRINCIPALE (BFS) : Tant qu'il y a des liens à visiter...
+    while (!this->_url_queue.empty())
     {
-        std::cerr << BOLD_RED << "Echec : impossible de télécharger la page !" << RESET << std::endl;
-        return;
+        // A. On récupère le prochain lien à traiter
+        std::string current_url = this->_url_queue.front().first;
+        int current_depth = this->_url_queue.front().second;
+        this->_url_queue.erase(this->_url_queue.begin()); // On l'enlève de la liste
+
+        // B. PAUSE POLITESSE (50ms) pour éviter le ban
+        usleep(50000); 
+
+        // C. Téléchargement de la page HTML
+        std::cout << "⏳ Traitement (Prof " << current_depth << ") : " << current_url << " ... ";
+        std::string html_content = _request(current_url);
+
+        if (html_content.empty())
+        {
+            std::cout << BOLD_RED << "❌ (Vide/Erreur)" << RESET << std::endl;
+            continue; // On passe au suivant
+        }
+        std::cout << BOLD_GREEN << "✅ OK" << RESET << std::endl;
+
+        // D. Analyse des images (Remplissage de _image_urls)
+        _parse_html(html_content);
+
+        // E. Analyse des liens (Récursivité) -> Ajoute les nouveaux liens dans la queue
+        if (_recursive && current_depth < _max_depth)
+        {
+            _parse_links(html_content, current_depth);
+        }
     }
 
-    // 2. On analyse le HTML pour trouver les images (remplit _image_urls)
-    this->_parse_html(html_content);
+    // 3. TÉLÉCHARGEMENT MASSIF DES IMAGES (Une fois l'exploration finie)
+    std::cout << BOLD_CYAN << "\n📦 Exploration terminée ! " << _image_urls.size() << " images uniques trouvées." << RESET << std::endl;
+    std::cout << "⬇️  Démarrage du téléchargement..." << std::endl;
 
-    // 3. On boucle sur toutes les images trouvées pour les télécharger
-    std::cout << "Démarrage du téléchargement..." << std::endl;
-
-    // --- Initialisation de l'itérateur pour la boucle while ---
     std::set<std::string>::iterator it = _image_urls.begin();
-
     while (it != _image_urls.end())
     {
         std::string image_url = *it;
         
-        // Téléchargement de l'image
+        // Téléchargement (avec petite pause aussi)
+        std::cout << "   -> " << image_url << std::endl;
         std::string image_data = _request(image_url);
+        usleep(10000); // 10ms entre chaque image
         
-        // Sauvegarde sur le disque via le Saver
         if (!image_data.empty())
             _saver.save_file(image_data, image_url);
-        // --- Incrémentation manuelle de l'itérateur ---
+        
         ++it;
     }
-    
+
+    // 4. Résumé final
     if (_image_urls.empty() && _invalid_images_count > 0)
 		std::cerr << BOLD_RED << "Error, TOUTES les images (" << _invalid_images_count << ") étaient invalides." << RESET << std::endl;
 	else
 	{
 		std::cout << BOLD_GREEN << "Terminé !" << RESET << std::endl;
 		if (_invalid_images_count > 0)
-			std::cout << BOLD_YELLOW << "Succès ! Mais il y'avait " << _invalid_images_count << " images au format invalide." << RESET << std::endl;
+			std::cout << BOLD_YELLOW << "Succès ! Mais il y'avait " << _invalid_images_count << " images rejetées." << RESET << std::endl;
 	}
 }
 
@@ -179,6 +205,9 @@ std::string Spider::_request(const std::string& url)
     
     // Suivre les redirections (http -> https ou www.)
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+
+	// User Agent (on se fait passer pour mozzilla firefox)
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
 
     // [ZONE DANGEREUSE] : Options SSL
     // Décommenter pour accepter les certificats auto-signés (ex: self-signed.badssl.com)
@@ -393,14 +422,23 @@ bool Spider::_is_valid_extension(const std::string& url)
 {
 	size_t pos;
 	size_t i;
-	std::vector<std::string> validExtensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp"};
+	std::vector<std::string> validExtensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"};
 
-	pos = url.find_last_of('.');
+    std::string path = url;
+
+	// 2. NETTOYAGE : On enlève tout ce qui est après le '?' (les paramètres)
+	size_t query_pos = path.find('?');
+	if (query_pos != std::string::npos)
+	{
+		path = path.substr(0, query_pos);
+	}
+
+	// 3. Extraction de l'extension
+	pos = path.find_last_of('.');
 	if (pos == std::string::npos)
 		return (FAILURE);
 
-	std::string extension = url.substr(pos);
-	
+	std::string extension = path.substr(pos);	
 	i = 0;
 	while (i < extension.length())
 	{

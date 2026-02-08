@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:16:38 by adnen             #+#    #+#             */
-/*   Updated: 2026/01/27 21:16:58 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 00:56:58 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # include <set>
 # include <regex>
 # include <climits>
+# include <unistd.h> // Pour usleep
 
 # define SUCCESS	true
 # define FAILURE	false
