@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 14:50:17 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 16:12:17 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 16:39:19 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ Scorpion &Scorpion::operator=(const Scorpion &src)
 
 void 	Scorpion::FileIdentification(const std::string& filename)
 {
+	this->_fileAnalysis(filename);
 	std::ifstream file(filename, std::ios::binary);
 	if (!file.is_open())
 	{
@@ -69,5 +70,31 @@ void 	Scorpion::FileIdentification(const std::string& filename)
 	}
 	else
 		std::cout << RED << "It's not a valid image file !" << RESET << std::endl;
+}
+
+void	Scorpion::_fileAnalysis(const std::string& fileName)
+{
+	struct stat st;
+	if (stat(fileName.c_str(), &st) == 0)
+	{
+		this->_dateAnalysis(st);
+		this->_weightAnalysis(st);
+	}
+	else
+	{
+		std::cerr << BOLD_RED << "Error: could not stat " << fileName << RESET << std::endl;
+	}
+}
+
+void	Scorpion::_dateAnalysis(const struct stat& st)
+{
+	char time_buf[20];
+	strftime(time_buf, sizeof(time_buf), "%d/%m/%Y %H:%M", localtime(&st.st_mtime));
+	std::cout << BOLD_YELLOW << "Date : " << RESET << time_buf << std::endl;
+}
+
+void	Scorpion::_weightAnalysis(const struct stat& st)
+{
+	std::cout << BOLD_YELLOW << "Weight : " << RESET << st.st_size << " bytes" << std::endl;
 }
 

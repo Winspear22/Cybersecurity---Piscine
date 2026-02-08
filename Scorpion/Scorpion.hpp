@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 14:50:21 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 15:48:43 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 16:39:11 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,9 @@ class Scorpion
 		void 	FileIdentification(const std::string& filename);
 
     private:
+		void	_fileAnalysis(const std::string& fileName);
+		void	_dateAnalysis(const struct stat& st);
+		void	_weightAnalysis(const struct stat& st);
         
 };
 

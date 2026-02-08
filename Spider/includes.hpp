@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:16:38 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 01:21:54 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 16:16:46 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # include <unistd.h> // Pour usleep
 # include <sys/stat.h> // Pour mkdir et stat
 # include <sys/types.h>
+# include <ctime>
 
 # define SUCCESS	true
 # define FAILURE	false
