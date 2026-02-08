@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 14:50:17 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 16:39:19 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 17:43:10 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ Scorpion &Scorpion::operator=(const Scorpion &src)
 
 void 	Scorpion::FileIdentification(const std::string& filename)
 {
-	this->_fileAnalysis(filename);
 	std::ifstream file(filename, std::ios::binary);
 	if (!file.is_open())
 	{
@@ -47,6 +46,7 @@ void 	Scorpion::FileIdentification(const std::string& filename)
 
 	unsigned char headOfFile[12];
 	file.read((char*)headOfFile, 12);
+	std::string format = "Unknown";
 	if (file.gcount() < 2)
 	{
     	std::cerr << RED << "File too small to be an image" << RESET << std::endl;
@@ -54,22 +54,32 @@ void 	Scorpion::FileIdentification(const std::string& filename)
 	}
 	
 	if (headOfFile[0] == 0xFF && headOfFile[1] == 0xD8)
-		std::cout << GREEN << "It's a jpeg/jpg file !" << RESET << std::endl;
+		format = "JPEG";
 	else if (headOfFile[0] == 0x89 && headOfFile[1] == 0x50)
-		std::cout << BLUE << "It's a png file !" << RESET << std::endl;
+		format = "PNG";
 	else if (headOfFile[0] == 0x47 && headOfFile[1] == 0x49)
-		std::cout << YELLOW << "It's a GIF file !" << RESET << std::endl;
+		format = "GIF";
 	else if (headOfFile[0] == 0x42 && headOfFile[1] == 0x4D)
-		std::cout << MAGENTA << "It's a bmp file !" << RESET << std::endl;
+		format = "BMP";
 	else if (headOfFile[0] == 0x52 && headOfFile[1] == 0x49)
 	{
 		if (headOfFile[8] == 'W' && headOfFile[9] == 'E' && headOfFile[10] == 'B' && headOfFile[11] == 'P')
-			std::cout << CYAN << "It's a webp file !" << RESET << std::endl;
+			format = "WEBP";
 		else
+		{
 			std::cout << RED << "It's not a valid image file (.wev or .avi) !" << RESET << std::endl;
+			return ;
+		}
 	}
 	else
+	{
 		std::cout << RED << "It's not a valid image file !" << RESET << std::endl;
+		return ;
+	}
+	std::cout << BOLD_WHITE << "Format de l'image : " << format << RESET << std::endl;
+	this->_fileAnalysis(filename);
+	if (format == "JPEG")
+		this->_findExifBlock(filename);
 }
 
 void	Scorpion::_fileAnalysis(const std::string& fileName)
@@ -98,3 +108,7 @@ void	Scorpion::_weightAnalysis(const struct stat& st)
 	std::cout << BOLD_YELLOW << "Weight : " << RESET << st.st_size << " bytes" << std::endl;
 }
 
+void	Scorpion::_findExifBlock(const std::string& fileName)
+{
+	
+}
