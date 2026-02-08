@@ -6,7 +6,7 @@
 #    By: adnen <adnen@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/26 00:46:32 by adnen             #+#    #+#              #
-#    Updated: 2026/02/08 14:27:30 by adnen            ###   ########.fr        #
+#    Updated: 2026/02/08 14:41:30 by adnen            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,15 +14,15 @@
 NAME        = spider
 
 # Liste tes fichiers ici
-SRCS        = main.cpp spider.cpp Saver.cpp ErrorsHandler.cpp UrlHelper.cpp Downloader.cpp Parser.cpp
+SRCS        = Spider/main.cpp Spider/Spider.cpp Spider/Saver.cpp Spider/ErrorsHandler.cpp Spider/UrlHelper.cpp Spider/Downloader.cpp Spider/Parser.cpp
 
 # Fichiers Headers
-INCLUDES    = includes.hpp spider.hpp Saver.hpp
+INCLUDES    = Spider/includes.hpp Spider/Spider.hpp Spider/Saver.hpp
 
 OBJS        = $(SRCS:.cpp=.o)
 
 CC          = g++
-FLAGS       = -Wall -Wextra -Werror -std=c++17
+FLAGS       = -Wall -Wextra -Werror -std=c++17 -I./Spider
 
 # [NOUVEAU] : On ajoute le flag pour linker la librairie curl
 LIBS        = -lcurl

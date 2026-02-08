@@ -6,12 +6,12 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:27:51 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 01:34:32 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 14:39:12 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes.hpp"
-#include "spider.hpp"
+#include "Spider.hpp"
 #include "Saver.hpp"
 
 int main(int argc, char **argv)
