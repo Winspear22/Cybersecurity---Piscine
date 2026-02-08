@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:28:03 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 00:56:58 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 01:05:57 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,8 @@ bool Spider::argsParser(void)
 		}
 		it++;
 	}
+	if (this->_start_url.empty())
+		return print_error("Error : No URL provided. Usage: ./spider [-rlp] URL");
 	return print_success("Arguments parsed successfully");
 }
 
