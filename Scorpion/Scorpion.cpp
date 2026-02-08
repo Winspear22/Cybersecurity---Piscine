@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 14:50:17 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 22:44:56 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 23:06:36 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,8 +169,7 @@ void Scorpion::_findExifBlock_Optimized(std::ifstream &file)
 }
 */
 
-void Scorpion::_parseTiff(std::ifstream &file)
-{
+void Scorpion::_parseTiff(std::ifstream &file) {
   // ============================================
   // ÉTAPE 1 : Sauvegarder le début du bloc TIFF
   // ============================================
@@ -183,8 +182,7 @@ void Scorpion::_parseTiff(std::ifstream &file)
   file.read((char *)endian, 2);
 
   bool isLittleEndian = false;
-	if (endian[0] == 'I' && endian[1] == 'I')
-	{
+  if (endian[0] == 'I' && endian[1] == 'I') {
     isLittleEndian = true;
     std::cout << BOLD_CYAN << "  [TIFF]   Endianness : Intel (Little Endian)"
               << RESET << std::endl;
@@ -249,6 +247,11 @@ void Scorpion::_parseTiff(std::ifstream &file)
   // ============================================
   // ÉTAPE 5 : Aller à l'IFD
   // ============================================
+  this->_parseIFD(file, tiffStart, isLittleEndian, ifdOffset);
+}
+
+void Scorpion::_parseIFD(std::ifstream &file, long tiffStart,
+                         bool isLittleEndian, unsigned long ifdOffset) {
   file.seekg(tiffStart + ifdOffset, std::ios::beg);
 
   // ============================================
@@ -263,9 +266,6 @@ void Scorpion::_parseTiff(std::ifstream &file)
   else
     numTags = numTagsBytes[1] + (numTagsBytes[0] * 256);
 
-  std::cout << BOLD_CYAN << "  [TIFF]   Number of Tags : " << numTags << RESET
-            << std::endl;
-
   // ============================================
   // ÉTAPE 7 : Boucler sur les Tags (12 octets chacun)
   // ============================================
@@ -279,8 +279,6 @@ void Scorpion::_parseTiff(std::ifstream &file)
 
     i = i + 1;
   }
-  std::cout << BOLD_GREEN << "  [TIFF]   Parsing complete!" << RESET
-            << std::endl;
 }
 
 void Scorpion::_readTagValue(std::ifstream &file, unsigned char *tagEntry,
@@ -330,8 +328,19 @@ void Scorpion::_readTagValue(std::ifstream &file, unsigned char *tagEntry,
     valueOffset = valueOffset + (tagEntry[8] * 256 * 256 * 256);
   }
 
-  // On ne traite que les tags de type ASCII (type 2) pour l'instant
-  if (dataType == 2) {
+  // PRIORITÉ 1 : Vérifier si c'est un Sub-IFD ou GPS (peu importe le type)
+  if (tagID == 0x8769) // EXIF Sub-IFD
+  {
+    std::cout << YELLOW << "  [TAG]    0x8769 : EXIF Sub-IFD (Recursion...)"
+              << RESET << std::endl;
+    this->_parseIFD(file, tiffStart, isLittleEndian, valueOffset);
+  } else if (tagID == 0x8825) // GPS Info
+  {
+    std::cout << YELLOW << "  [GPS]    Found GPS Info !" << RESET << std::endl;
+    this->_parseIFD(file, tiffStart, isLittleEndian, valueOffset);
+  }
+  // PRIORITÉ 2 : Traiter selon le type de données
+  else if (dataType == 2) {
     // Pour le texte, aller lire à l'offset
     file.seekg(tiffStart + valueOffset, std::ios::beg);
 
@@ -349,14 +358,48 @@ void Scorpion::_readTagValue(std::ifstream &file, unsigned char *tagEntry,
     else if (tagID == 0x0132)
       std::cout << GREEN << "  [TAG]    Date/Time : " << textBuffer << RESET
                 << std::endl;
-  } else if (tagID == 0x8769)
-    std::cout << YELLOW
-              << "  [TAG]    0x8769 : EXIF Sub-IFD (offset: " << valueOffset
-              << ")" << RESET << std::endl;
-  else if (tagID == 0x8825)
-    std::cout << YELLOW
-              << "  [TAG]    0x8825 : GPS Info (offset: " << valueOffset << ")"
-              << RESET << std::endl;
+  } else if (dataType == 5) // RATIONAL (2x Long : Numérateur / Dénominateur)
+  {
+    // On va lire les 3 valeurs (Degrés, Minutes, Secondes) à l'offset
+    if (tagID == 0x0002 || tagID == 0x0004) // Latitude ou Longitude
+    {
+      file.seekg(tiffStart + valueOffset, std::ios::beg);
+      unsigned int degreesNum, degreesDenom;
+      unsigned int minutesNum, minutesDenom;
+      unsigned int secondsNum, secondsDenom;
+
+      // Lire Degrés
+      file.read((char *)&degreesNum, 4);
+      file.read((char *)&degreesDenom, 4);
+      // Lire Minutes
+      file.read((char *)&minutesNum, 4);
+      file.read((char *)&minutesDenom, 4);
+      // Lire Secondes
+      file.read((char *)&secondsNum, 4);
+      file.read((char *)&secondsDenom, 4);
+
+      // Gérer l'endianness
+      if (!isLittleEndian) {
+        degreesNum = __builtin_bswap32(degreesNum);
+        degreesDenom = __builtin_bswap32(degreesDenom);
+        minutesNum = __builtin_bswap32(minutesNum);
+        minutesDenom = __builtin_bswap32(minutesDenom);
+        secondsNum = __builtin_bswap32(secondsNum);
+        secondsDenom = __builtin_bswap32(secondsDenom);
+      }
+
+      double deg = (double)degreesNum / degreesDenom;
+      double min = (double)minutesNum / minutesDenom;
+      double sec = (double)secondsNum / secondsDenom;
+
+      if (tagID == 0x0002)
+        std::cout << BOLD_MAGENTA << "  [GPS]    Latitude  : " << deg << " deg "
+                  << min << "' " << sec << "\"" << RESET << std::endl;
+      else
+        std::cout << BOLD_MAGENTA << "  [GPS]    Longitude : " << deg << " deg "
+                  << min << "' " << sec << "\"" << RESET << std::endl;
+    }
+  }
 
   // Revenir à la position d'origine
   file.seekg(currentPos, std::ios::beg);
