@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 14:50:17 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 22:13:16 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 22:41:21 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,21 +177,135 @@ void Scorpion::_findExifBlock_Optimized(std::ifstream &file)
 
 void Scorpion::_parseTiff(std::ifstream &file)
 {
+  // ============================================
+  // ÉTAPE 1 : Sauvegarder le début du bloc TIFF
+  // ============================================
+  long tiffStart = (long)file.tellg();
+
+  // ============================================
+  // ÉTAPE 2 : Lire l'Endianness (II ou MM)
+  // ============================================
   unsigned char endian[2];
   file.read((char *)endian, 2);
 
-  bool isLittleEndian = (endian[0] == 'I' && endian[1] == 'I');
-
-  if (isLittleEndian)
-    std::cout << BOLD_CYAN << "  [TIFF]   Endianness : Intel (Little Endian)" << RESET << std::endl;
-  else if (endian[0] == 'M' && endian[1] == 'M')
-    std::cout << BOLD_CYAN << "  [TIFF]   Endianness : Motorola (Big Endian)" << RESET << std::endl;
-  else
-  {
-    std::cout << BOLD_RED << "  [TIFF]   Error: Invalid TIFF Header" << RESET << std::endl;
+  bool isLittleEndian = false;
+	if (endian[0] == 'I' && endian[1] == 'I')
+	{
+    isLittleEndian = true;
+    std::cout << BOLD_CYAN << "  [TIFF]   Endianness : Intel (Little Endian)"
+              << RESET << std::endl;
+  } else if (endian[0] == 'M' && endian[1] == 'M') {
+    isLittleEndian = false;
+    std::cout << BOLD_CYAN << "  [TIFF]   Endianness : Motorola (Big Endian)"
+              << RESET << std::endl;
+  } else {
+    std::cout << BOLD_RED << "  [TIFF]   Error: Invalid TIFF Header" << RESET
+              << std::endl;
     return;
   }
 
-  
+  // ============================================
+  // ÉTAPE 3 : Vérifier le Magic Number (42)
+  // ============================================
+  unsigned char magicNumber[2];
+  file.read((char *)magicNumber, 2);
 
+  bool magicOK = false;
+  if (isLittleEndian) {
+    // Little Endian : 42 = 2A 00
+    if (magicNumber[0] == 0x2A && magicNumber[1] == 0x00)
+      magicOK = true;
+  } else {
+    // Big Endian : 42 = 00 2A
+    if (magicNumber[0] == 0x00 && magicNumber[1] == 0x2A)
+      magicOK = true;
+  }
+
+  if (!magicOK) {
+    std::cout << BOLD_RED << "  [TIFF]   Error: Magic Number is not 42" << RESET
+              << std::endl;
+    return;
+  }
+  std::cout << BOLD_CYAN << "  [TIFF]   Magic Number : 42 (OK)" << RESET
+            << std::endl;
+
+  // ============================================
+  // ÉTAPE 4 : Lire l'offset de l'IFD (4 octets)
+  // ============================================
+  unsigned char offsetBytes[4];
+  file.read((char *)offsetBytes, 4);
+
+  unsigned long ifdOffset = 0;
+  if (isLittleEndian) {
+    // Little Endian : le premier octet est le plus petit
+    ifdOffset = offsetBytes[0];
+    ifdOffset = ifdOffset + (offsetBytes[1] * 256);
+    ifdOffset = ifdOffset + (offsetBytes[2] * 256 * 256);
+    ifdOffset = ifdOffset + (offsetBytes[3] * 256 * 256 * 256);
+  } else {
+    // Big Endian : le premier octet est le plus grand
+    ifdOffset = offsetBytes[3];
+    ifdOffset = ifdOffset + (offsetBytes[2] * 256);
+    ifdOffset = ifdOffset + (offsetBytes[1] * 256 * 256);
+    ifdOffset = ifdOffset + (offsetBytes[0] * 256 * 256 * 256);
+  }
+  std::cout << BOLD_CYAN << "  [TIFF]   IFD Offset : " << ifdOffset << RESET
+            << std::endl;
+
+  // ============================================
+  // ÉTAPE 5 : Aller à l'IFD
+  // ============================================
+  file.seekg(tiffStart + ifdOffset, std::ios::beg);
+
+  // ============================================
+  // ÉTAPE 6 : Lire le nombre de Tags (2 octets)
+  // ============================================
+  unsigned char numTagsBytes[2];
+  file.read((char *)numTagsBytes, 2);
+
+  unsigned short numTags = 0;
+  if (isLittleEndian)
+    numTags = numTagsBytes[0] + (numTagsBytes[1] * 256);
+  else
+    numTags = numTagsBytes[1] + (numTagsBytes[0] * 256);
+
+  std::cout << BOLD_CYAN << "  [TIFF]   Number of Tags : " << numTags << RESET
+            << std::endl;
+
+  // ============================================
+  // ÉTAPE 7 : Boucler sur les Tags (12 octets chacun)
+  // ============================================
+  unsigned short i = 0;
+  while (i < numTags) {
+    unsigned char tagEntry[12];
+    file.read((char *)tagEntry, 12);
+
+    // Les 2 premiers octets sont l'ID du Tag
+    unsigned short tagID = 0;
+    if (isLittleEndian)
+      tagID = tagEntry[0] + (tagEntry[1] * 256);
+    else
+      tagID = tagEntry[1] + (tagEntry[0] * 256);
+
+    // Affichage basique de l'ID
+    // On peut ajouter des cas spéciaux pour les IDs connus
+    if (tagID == 0x010F) // Manufacturer
+      std::cout << GREEN << "  [TAG]    0x010F : Manufacturer" << RESET
+                << std::endl;
+    else if (tagID == 0x0110) // Model
+      std::cout << GREEN << "  [TAG]    0x0110 : Camera Model" << RESET
+                << std::endl;
+    else if (tagID == 0x0132) // DateTime
+      std::cout << GREEN << "  [TAG]    0x0132 : Date/Time" << RESET
+                << std::endl;
+    else if (tagID == 0x8769) // EXIF Sub-IFD
+      std::cout << YELLOW
+                << " [TAG]    0x8769 : EXIF Sub-IFD (more data inside)" << RESET
+                << std::endl;
+    else if (tagID == 0x8825) // GPS Info
+      std::cout << YELLOW << " [TAG]    0x8825 : GPS Info" << RESET
+                << std::endl;
+    i = i + 1;
+  }
+  std::cout << BOLD_GREEN << " [TIFF]   Parsing complete!" << RESET << std::endl;
 }
