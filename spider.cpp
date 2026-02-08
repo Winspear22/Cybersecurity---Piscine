@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/26 00:28:03 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 01:23:36 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/08 14:26:59 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ void Spider::run()
 
         // C. Téléchargement de la page HTML
         std::cout << "⏳ Traitement (Prof " << current_depth << ") : " << current_url << " ... ";
-        std::string html_content = _request(current_url);
+        std::string html_content = _downloader.curl(current_url);
 
         if (html_content.empty())
         {
@@ -136,12 +136,28 @@ void Spider::run()
         std::cout << BOLD_GREEN << "✅ OK" << RESET << std::endl;
 
         // D. Analyse des images (Remplissage de _image_urls)
-        _parse_html(html_content);
+        std::set<std::string> new_images = _parser.extract_images(html_content, _start_url, _urlHelper);
+        _image_urls.insert(new_images.begin(), new_images.end());
 
         // E. Analyse des liens (Récursivité) -> Ajoute les nouveaux liens dans la queue
         if (_recursive && current_depth < _max_depth)
         {
-            _parse_links(html_content, current_depth);
+             std::vector<std::string> new_links = _parser.extract_links(html_content, _start_url, _urlHelper);
+             
+             // On ajoute les nouveaux liens à la queue BFS
+             for (size_t i = 0; i < new_links.size(); i++)
+             {
+                 std::string link = new_links[i];
+                 if (_visited_urls.find(link) == _visited_urls.end())
+                 {
+                     if (_is_safe_to_scan(link) == SUCCESS) // On réutilise is_safe pour vérifier domaine/doublons
+                     {
+                         _visited_urls.insert(link);
+                         _url_queue.push_back(std::make_pair(link, current_depth + 1));
+                         std::cout << "  [BFS] Ajout lien (Prof " << current_depth + 1 << ") : " << link << std::endl;
+                     }
+                 }
+             }
         }
     }
 
@@ -156,7 +172,7 @@ void Spider::run()
         
         // Téléchargement (avec petite pause aussi)
         std::cout << "   -> " << image_url << std::endl;
-        std::string image_data = _request(image_url);
+        std::string image_data = _downloader.curl(image_url);
         usleep(10000); // 10ms entre chaque image
         
         if (!image_data.empty())
@@ -180,131 +196,15 @@ void Spider::run()
 // PARTIE 1 : LA CONFIGURATION ET L'ENVOI (Le "Patron")
 // ------------------------------------------------------------------
 
-std::string Spider::_request(const std::string& url)
-{
-    CURL        *curl = curl_easy_init();
-    std::string readBuffer;
-    CURLcode    res;
 
-    // Sécurité : Si l'init échoue, on arrête tout de suite.
-    if (!curl) {
-        std::cerr << BOLD_RED << "Erreur critique : Impossible d'initialiser CURL." << RESET << std::endl;
-        return "";
-    }
-
-    // ---------------------------------------------------------
-    // 1. CONFIGURATION DU ROBOT
-    // ---------------------------------------------------------
-    
-    // L'URL cible
-    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    
-    // Le Callback (Le magasinier)
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, _write_callback);
-    
-    // Le Buffer (Le sac où ranger les données)
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-    
-    // Suivre les redirections (http -> https ou www.)
-    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-
-	// User Agent (on se fait passer pour mozzilla firefox)
-	curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
-
-    // [ZONE DANGEREUSE] : Options SSL
-    // Décommenter pour accepter les certificats auto-signés (ex: self-signed.badssl.com)
-    // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-    // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-
-    // ---------------------------------------------------------
-    // 2. EXÉCUTION
-    // ---------------------------------------------------------
-    
-    res = curl_easy_perform(curl);
-
-    // ---------------------------------------------------------
-    // 3. GESTION DES ERREURS
-    // ---------------------------------------------------------
-    
-    if (res != CURLE_OK)
-    {
-        // En cas d'erreur, on vide le buffer pour ne pas renvoyer de données corrompues
-        readBuffer.clear();
-
-        std::cerr << BOLD_RED << "❌ Erreur Curl (" << res << ") : " 
-                  << curl_easy_strerror(res) << RESET << std::endl;
-
-        // Message spécifique pour le certificat SSL (Code 60)
-        if (res == CURLE_PEER_FAILED_VERIFICATION)
-        {
-            std::cerr << BOLD_YELLOW << "Erreur : Certificat SSL invalide." << std::endl;
-            std::cerr << "    Le site " << url << " possède un certificat auto-signé ou expiré." << std::endl;
-            std::cerr << "    Connexion refusée par défaut." << RESET << std::endl;
-        }
-    }
-
-    // ---------------------------------------------------------
-    // 4. NETTOYAGE
-    // ---------------------------------------------------------
-    
-    curl_easy_cleanup(curl);
-    
-    return readBuffer;
-}
 // ------------------------------------------------------------------
 // PARTIE 2 : LE CALLBACK (Le "Magasinier")
 // ------------------------------------------------------------------
 // Note : Pas de mot "static" ici ! Il est seulement dans le .hpp
 // Cette fonction est appelée automatiquement par libcurl quand des paquets arrivent.
 
-size_t Spider::_write_callback(void *contents, size_t size, size_t nmemb, void *userp)
-{
-    // A. Calcul de la taille réelle du paquet reçu
-    // Curl donne la taille en "nombre de blocs" * "taille du bloc".
-    size_t realsize = size * nmemb;
 
-    // B. Récupération du sac (Casting)
-    // "userp" est un pointeur générique (void*). C'est l'adresse de &readBuffer qu'on a passée plus haut.
-    // On doit dire au compilateur : "Je te jure que c'est un pointeur vers une std::string".
-    std::string *buffer = static_cast<std::string*>(userp);
 
-    // C. Remplissage
-    // On ajoute (append) les données brutes (castées en char*) à la fin de notre string.
-    buffer->append((char*)contents, realsize);
-
-    // D. Validation
-    // On renvoie la taille traitée. Si on renvoie un chiffre différent de realsize,
-    // libcurl pensera qu'il y a eu une erreur d'écriture et coupera la connexion.
-    return realsize;
-}
-
-void Spider::_parse_html(const std::string& html)
-{
-	std::regex regex(R"(<img[^>]*src="([^"]*))");
-	std::sregex_iterator it(html.begin(), html.end(), regex);
-	std::sregex_iterator end;
-	while (it != end)
-	{
-		std::smatch match = *it;
-		if (match.size() > 1)
-		{
-			std::string raw_url = match[1];
-			// On nettoie l'URL
-			std::string clean_url = _resolve_url(_start_url, raw_url);
-			
-			// Si le résultat est valide (commence par http), on l'ajoute
-			if (clean_url.find("http") == 0)
-			{
-				if (_is_valid_extension(clean_url))
-					_image_urls.insert(clean_url);
-				else
-					_invalid_images_count++;
-			}
-		}
-		++it;
-	}
-	std::cout << BOLD_CYAN << "🔍 Analyse terminée : " << _image_urls.size() << " images trouvées." << RESET << std::endl;
-}
 
 bool Spider::_is_safe_to_scan(std::string& url)
 {
@@ -350,110 +250,4 @@ bool Spider::_is_safe_to_scan(std::string& url)
 		return (print_error("[IGNORÉ] Hors domaine : " + url));
 
 	return (SUCCESS);
-}
-
-void Spider::_parse_links(const std::string& html_content, int current_depth)
-{
-	std::regex regex(R"(<a[^>]*href=["']([^"']+)["'])");
-	std::sregex_iterator it(html_content.begin(), html_content.end(), regex);
-	std::sregex_iterator end;
-	
-	while (it != end)
-	{
-		std::smatch match = *it;
-		if (match.size() > 1)
-		{
-			std::string raw_url = match[1];
-			std::string clean_url = this->_resolve_url(_start_url, raw_url);
-			
-			if (this->_is_safe_to_scan(clean_url) == SUCCESS)
-			{
-				if (this->_visited_urls.find(clean_url) == this->_visited_urls.end())
-				{
-					// 1. CRUCIAL : On le marque comme visité pour ne plus le refaire
-					this->_visited_urls.insert(clean_url);
-					// 2. IMPORTANT : On ajoute avec la profondeur + 1
-					this->_url_queue.push_back(std::make_pair(clean_url, current_depth + 1));
-					// 3. OPTIONNEL : Un petit log pour suivre
-					std::cout << "  [BFS] Ajout lien (Prof " << current_depth + 1 << ") : " << clean_url << std::endl;					
-				}
-			}
-		}
-		++it;
-	}
-}
-
-std::string Spider::_resolve_url(const std::string& base_url, const std::string& link_url)
-{
-	if (link_url.find("http") == 0)
-		return link_url;
-	else if (link_url.find("//") == 0)
-		return "http:" + link_url;
-	
-	// 1. Déclarations
-	std::string domain;
-	std::string path;
-	
-	// 2. Extraction du DOMAINE
-	size_t protocolPos = base_url.find("://");
-	// Si on ne trouve pas le protocole, on suppose que c'est du http implicite ou qu'on ne peut rien faire
-	if (protocolPos == std::string::npos) 
-		return link_url; // Cas fallback
-
-	size_t domainEnds = base_url.find("/", protocolPos + 3);
-	if (domainEnds != std::string::npos)
-		domain = base_url.substr(0, domainEnds);
-	else
-		domain = base_url;
-	
-	// 3. Extraction du PATH
-	size_t lastSlash = base_url.find_last_of("/");
-	if (lastSlash != std::string::npos && lastSlash > protocolPos + 2)
-        path = base_url.substr(0, lastSlash + 1);
-    else
-        path = base_url + "/";
-
-	// 4. Assemblage
-    if (link_url.find("/") == 0)
-        return domain + link_url;
-    else
-        return path + link_url;
-}
-
-bool Spider::_is_valid_extension(const std::string& url)
-{
-	size_t pos;
-	size_t i;
-	std::vector<std::string> validExtensions = {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"};
-
-    std::string path = url;
-
-	// 2. NETTOYAGE : On enlève tout ce qui est après le '?' (les paramètres)
-	size_t query_pos = path.find('?');
-	if (query_pos != std::string::npos)
-	{
-		path = path.substr(0, query_pos);
-	}
-
-	// 3. Extraction de l'extension
-	pos = path.find_last_of('.');
-	if (pos == std::string::npos)
-		return (FAILURE);
-
-	std::string extension = path.substr(pos);	
-	i = 0;
-	while (i < extension.length())
-	{
-		extension[i] = std::tolower(extension[i]);
-		i++;
-	}
-
-	i = 0;
-	while (i < validExtensions.size())
-	{
-		if (extension == validExtensions[i])
-			return (SUCCESS);
-		i++;
-	}
-	return (FAILURE);
 }

@@ -6,7 +6,7 @@
 #    By: adnen <adnen@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/26 00:46:32 by adnen             #+#    #+#              #
-#    Updated: 2026/01/27 19:14:34 by adnen            ###   ########.fr        #
+#    Updated: 2026/02/08 14:27:30 by adnen            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@
 NAME        = spider
 
 # Liste tes fichiers ici
-SRCS        = main.cpp spider.cpp Saver.cpp ErrorsHandler.cpp
+SRCS        = main.cpp spider.cpp Saver.cpp ErrorsHandler.cpp UrlHelper.cpp Downloader.cpp Parser.cpp
 
 # Fichiers Headers
 INCLUDES    = includes.hpp spider.hpp Saver.hpp
