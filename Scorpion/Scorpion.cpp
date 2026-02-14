@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 14:50:17 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/14 15:25:57 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/14 17:23:52 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,13 +101,11 @@ void Scorpion::FileIdentification(const std::string &filename)
     }
     else
     {
-        std::cout << RED << "It's not a valid image file !" << RESET
-                  << std::endl;
+        std::cout << RED << "It's not a valid image file !" << RESET << std::endl;
         return;
     }
 
-    std::cout << BOLD_WHITE << "Format de l'image : " << format << RESET
-              << std::endl;
+    std::cout << BOLD_WHITE << "Format de l'image : " << format << RESET << std::endl;
     parser->_fileAnalysis(filename);
     parser->parseSpecific(file);
     delete parser;
@@ -122,22 +120,19 @@ void Scorpion::_fileAnalysis(const std::string &fileName)
         this->_weightAnalysis(st);
     }
     else
-        std::cerr << BOLD_RED << "Error: could not stat " << fileName << RESET
-                  << std::endl;
+        std::cerr << BOLD_RED << "Error: could not stat " << fileName << RESET << std::endl;
 }
 
 void Scorpion::_dateAnalysis(const struct stat &st)
 {
     char time_buf[20];
-    strftime(time_buf, sizeof(time_buf), "%d/%m/%Y %H:%M",
-             localtime(&st.st_mtime));
+    strftime(time_buf, sizeof(time_buf), "%d/%m/%Y %H:%M", localtime(&st.st_mtime));
     std::cout << BOLD_YELLOW << "Date : " << RESET << time_buf << std::endl;
 }
 
 void Scorpion::_weightAnalysis(const struct stat &st)
 {
-    std::cout << BOLD_YELLOW << "Weight : " << RESET << st.st_size << " bytes"
-              << std::endl;
+    std::cout << BOLD_YELLOW << "Weight : " << RESET << st.st_size << " bytes" << std::endl;
 }
 
 void Scorpion::_parseTiff(std::ifstream &file)
@@ -157,21 +152,16 @@ void Scorpion::_parseTiff(std::ifstream &file)
     if (endian[0] == 'I' && endian[1] == 'I')
     {
         isLittleEndian = true;
-        std::cout << BOLD_CYAN
-                  << "  [TIFF]   Endianness : Intel (Little Endian)" << RESET
-                  << std::endl;
+        std::cout << BOLD_CYAN << "  [TIFF]   Endianness : Intel (Little Endian)" << RESET << std::endl;
     }
     else if (endian[0] == 'M' && endian[1] == 'M')
     {
         isLittleEndian = false;
-        std::cout << BOLD_CYAN
-                  << "  [TIFF]   Endianness : Motorola (Big Endian)" << RESET
-                  << std::endl;
+        std::cout << BOLD_CYAN << "  [TIFF]   Endianness : Motorola (Big Endian)" << RESET << std::endl;
     }
     else
     {
-        std::cout << BOLD_RED << "  [TIFF]   Error: Invalid TIFF Header"
-                  << RESET << std::endl;
+        std::cout << BOLD_RED << "  [TIFF]   Error: Invalid TIFF Header" << RESET << std::endl;
         return;
     }
 
@@ -185,22 +175,22 @@ void Scorpion::_parseTiff(std::ifstream &file)
     if (isLittleEndian)
     {
         // Little Endian : 42 = 2A 00
-        if (magicNumber[0] == 0x2A && magicNumber[1] == 0x00) magicOK = true;
+        if (magicNumber[0] == 0x2A && magicNumber[1] == 0x00)
+			magicOK = true;
     }
     else
     {
         // Big Endian : 42 = 00 2A
-        if (magicNumber[0] == 0x00 && magicNumber[1] == 0x2A) magicOK = true;
+        if (magicNumber[0] == 0x00 && magicNumber[1] == 0x2A)
+			magicOK = true;
     }
 
     if (!magicOK)
     {
-        std::cout << BOLD_RED << "  [TIFF]   Error: Magic Number is not 42"
-                  << RESET << std::endl;
+        std::cout << BOLD_RED << "  [TIFF]   Error: Magic Number is not 42" << RESET << std::endl;
         return;
     }
-    std::cout << BOLD_CYAN << "  [TIFF]   Magic Number : 42 (OK)" << RESET
-              << std::endl;
+    std::cout << BOLD_CYAN << "  [TIFF]   Magic Number : 42 (OK)" << RESET << std::endl;
 
     // ============================================
     // ÉTAPE 4 : Lire l'offset de l'IFD (4 octets)
@@ -225,8 +215,7 @@ void Scorpion::_parseTiff(std::ifstream &file)
         ifdOffset = ifdOffset + (offsetBytes[1] * 256 * 256);
         ifdOffset = ifdOffset + (offsetBytes[0] * 256 * 256 * 256);
     }
-    std::cout << BOLD_CYAN << "  [TIFF]   IFD Offset : " << ifdOffset << RESET
-              << std::endl;
+    std::cout << BOLD_CYAN << "  [TIFF]   IFD Offset : " << ifdOffset << RESET << std::endl;
 
     // ============================================
     // ÉTAPE 5 : Aller à l'IFD
@@ -234,8 +223,7 @@ void Scorpion::_parseTiff(std::ifstream &file)
     this->_parseIFD(file, tiffStart, isLittleEndian, ifdOffset);
 }
 
-void Scorpion::_parseIFD(std::ifstream &file, long tiffStart,
-                         bool isLittleEndian, unsigned long ifdOffset)
+void Scorpion::_parseIFD(std::ifstream &file, long tiffStart, bool isLittleEndian, unsigned long ifdOffset)
 {
     file.seekg(tiffStart + ifdOffset, std::ios::beg);
 
@@ -267,8 +255,7 @@ void Scorpion::_parseIFD(std::ifstream &file, long tiffStart,
     }
 }
 
-void Scorpion::_readTagValue(std::ifstream &file, unsigned char *tagEntry,
-                             long tiffStart, bool isLittleEndian)
+void Scorpion::_readTagValue(std::ifstream &file, unsigned char *tagEntry, long tiffStart, bool isLittleEndian)
 {
     // Sauvegarder la position actuelle pour y revenir après
     long currentPos = file.tellg();
@@ -324,8 +311,7 @@ void Scorpion::_readTagValue(std::ifstream &file, unsigned char *tagEntry,
     // PRIORITÉ 1 : Vérifier si c'est un Sub-IFD ou GPS (peu importe le type)
     if (tagID == 0x8769)  // EXIF Sub-IFD
     {
-        std::cout << YELLOW << "  [TAG]    0x8769 : EXIF Sub-IFD (Recursion...)"
-                  << RESET << std::endl;
+        std::cout << YELLOW << "  [TAG]    0x8769 : EXIF Sub-IFD (Recursion...)" << RESET << std::endl;
         this->_parseIFD(file, tiffStart, isLittleEndian, valueOffset);
     }
     else if (tagID == 0x8825)  // GPS Info
