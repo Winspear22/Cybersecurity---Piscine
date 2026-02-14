@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 14:50:21 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/08 23:14:17 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/14 14:55:48 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,17 @@
 
 #include "../Spider/includes.hpp"
 
-class Scorpion {
+class Scorpion
+{
 public:
   Scorpion();
-  ~Scorpion();
+  virtual ~Scorpion();
   Scorpion(const Scorpion &src);
   Scorpion &operator=(const Scorpion &src);
 
   void FileIdentification(const std::string &filename);
 
-private:
+protected:
   void _fileAnalysis(const std::string &fileName);
   void _dateAnalysis(const struct stat &st);
   void _weightAnalysis(const struct stat &st);
@@ -34,6 +35,7 @@ private:
                  unsigned long ifdOffset);
   void _readTagValue(std::ifstream &file, unsigned char *tagEntry,
                      long tiffStart, bool isLittleEndian);
+  virtual void parseSpecific(std::ifstream &file) = 0;
 };
 
 #endif
