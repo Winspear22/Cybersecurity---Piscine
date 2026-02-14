@@ -17,13 +17,14 @@
 
 class ScorpionWEBP : public Scorpion
 {
-	public:
-		ScorpionWEBP();
-		ScorpionWEBP(const ScorpionWEBP &src);
-		ScorpionWEBP &operator=(const ScorpionWEBP &src);
-		virtual ~ScorpionWEBP();
-	private:
-		void parseSpecific(std::ifstream &file) override;
+public:
+    ScorpionWEBP();
+    ScorpionWEBP(const ScorpionWEBP &src);
+    ScorpionWEBP &operator=(const ScorpionWEBP &src);
+    virtual ~ScorpionWEBP();
+
+private:
+    void parseSpecific(std::ifstream &file) override;
 };
 
 #endif

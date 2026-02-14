@@ -13,21 +13,25 @@
 #ifndef __PARSER_HPP__
 #define __PARSER_HPP__
 
-#include "includes.hpp"
 #include "UrlHelper.hpp"
+#include "includes.hpp"
 
 class Parser
 {
-	public:
-		Parser();
-		Parser(const Parser &src);
-		Parser &operator=(const Parser &src);
-		~Parser();
+public:
+    Parser();
+    Parser(const Parser &src);
+    Parser &operator=(const Parser &src);
+    ~Parser();
 
-        std::set<std::string> extract_images(const std::string& html, const std::string& start_url, UrlHelper& urlHelper);
-        
-        // Retourne un VECTOR de liens (pour la récursion)
-        std::vector<std::string> extract_links(const std::string& html, const std::string& start_url, UrlHelper& urlHelper);
+    std::set<std::string> extract_images(const std::string &html,
+                                         const std::string &start_url,
+                                         UrlHelper &urlHelper);
+
+    // Retourne un VECTOR de liens (pour la récursion)
+    std::vector<std::string> extract_links(const std::string &html,
+                                           const std::string &start_url,
+                                           UrlHelper &urlHelper);
 };
 
 #endif

@@ -17,15 +17,17 @@
 
 class Downloader
 {
-	public:
-		Downloader();
-		Downloader(const Downloader &src);
-		Downloader &operator=(const Downloader &src);
-		~Downloader();
-		
-		std::string		curl(const std::string& url);
-	private:
-		static size_t			_write_callback(void *contents, size_t size, size_t nmemb, void *userp);
+public:
+    Downloader();
+    Downloader(const Downloader &src);
+    Downloader &operator=(const Downloader &src);
+    ~Downloader();
+
+    std::string curl(const std::string &url);
+
+private:
+    static size_t _write_callback(void *contents, size_t size, size_t nmemb,
+                                  void *userp);
 };
 
 #endif

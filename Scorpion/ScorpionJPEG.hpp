@@ -17,13 +17,14 @@
 
 class ScorpionJPEG : public Scorpion
 {
-	public:
-		ScorpionJPEG();
-		ScorpionJPEG(const ScorpionJPEG &src);
-		ScorpionJPEG &operator=(const ScorpionJPEG &src);
-		virtual ~ScorpionJPEG();
-	private:
-		void parseSpecific(std::ifstream &file) override;
+public:
+    ScorpionJPEG();
+    ScorpionJPEG(const ScorpionJPEG &src);
+    ScorpionJPEG &operator=(const ScorpionJPEG &src);
+    virtual ~ScorpionJPEG();
+
+private:
+    void parseSpecific(std::ifstream &file) override;
 };
 
 #endif

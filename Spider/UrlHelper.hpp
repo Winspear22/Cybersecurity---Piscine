@@ -17,15 +17,17 @@
 
 class UrlHelper
 {
-	public:
-		UrlHelper();
-		UrlHelper(const UrlHelper &src);
-		UrlHelper &operator=(const UrlHelper &src);
-		~UrlHelper();
-		
-		std::string			_resolve_url(const std::string& base_url, const std::string& link_url);
-		bool				_is_valid_extension(const std::string& url);
-	private:
+public:
+    UrlHelper();
+    UrlHelper(const UrlHelper &src);
+    UrlHelper &operator=(const UrlHelper &src);
+    ~UrlHelper();
+
+    std::string _resolve_url(const std::string &base_url,
+                             const std::string &link_url);
+    bool _is_valid_extension(const std::string &url);
+
+private:
 };
 
 #endif

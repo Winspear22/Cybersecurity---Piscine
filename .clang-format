@@ -1,0 +1,10 @@
+BasedOnStyle: Google
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+BreakBeforeBraces: Allman
+AllowShortBlocksOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+ColumnLimit: 80
+AccessModifierOffset: -4
+IndentCaseLabels: true

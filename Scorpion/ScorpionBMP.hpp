@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/14 14:36:05 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/14 14:56:01 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/14 15:17:19 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,14 @@
 
 class ScorpionBMP : public Scorpion
 {
-	public:
-		ScorpionBMP();
-		ScorpionBMP(const ScorpionBMP &src);
-		Scorpion &operator=(const Scorpion &src);
-		virtual ~ScorpionBMP();
-		
-	private:
-		void parseSpecific(std::ifstream &file) override;
+public:
+    ScorpionBMP();
+    ScorpionBMP(const ScorpionBMP &src);
+    ScorpionBMP &operator=(const ScorpionBMP &src);
+    virtual ~ScorpionBMP();
+
+private:
+    void parseSpecific(std::ifstream &file) override;
 };
 
 #endif

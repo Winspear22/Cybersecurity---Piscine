@@ -13,22 +13,22 @@
 #ifndef __SAVER_HPP__
 #define __SAVER_HPP__
 
-# include "includes.hpp"
+#include "includes.hpp"
 
 class Saver
 {
-	public:
-		Saver();
-		Saver(const Saver &src);
-		Saver &operator=(const Saver &src);
-		~Saver();
+public:
+    Saver();
+    Saver(const Saver &src);
+    Saver &operator=(const Saver &src);
+    ~Saver();
 
-// void save_file(const std::string& data, const std::string& url);
-		void save_file(const std::string& data, const std::string& url, const std::string& output_dir);
+    // void save_file(const std::string& data, const std::string& url);
+    void save_file(const std::string &data, const std::string &url,
+                   const std::string &output_dir);
 
-	private:
-		std::string _extract_filename(const std::string& url);
-
+private:
+    std::string _extract_filename(const std::string &url);
 };
 
 #endif

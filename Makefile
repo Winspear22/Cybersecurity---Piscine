@@ -6,7 +6,7 @@
 #    By: adnen <adnen@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/26 00:46:32 by adnen             #+#    #+#              #
-#    Updated: 2026/02/08 16:03:10 by adnen            ###   ########.fr        #
+#    Updated: 2026/02/14 15:17:43 by adnen            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,10 @@ SRCS_SPIDER    = Spider/main.cpp Spider/Spider.cpp Spider/Saver.cpp Spider/Error
                  Spider/UrlHelper.cpp Spider/Downloader.cpp Spider/Parser.cpp
 
 # Sources Scorpion
-SRCS_SCORPION  = Scorpion/main.cpp Scorpion/Scorpion.cpp
+SRCS_SCORPION  = Scorpion/main.cpp Scorpion/Scorpion.cpp \
+                 Scorpion/ScorpionJPEG.cpp Scorpion/ScorpionPNG.cpp \
+                 Scorpion/ScorpionGIF.cpp Scorpion/ScorpionBMP.cpp \
+                 Scorpion/ScorpionWEBP.cpp
 
 # Fichiers Headers
 INCLUDES       = Spider/includes.hpp Spider/Spider.hpp Spider/Saver.hpp \
