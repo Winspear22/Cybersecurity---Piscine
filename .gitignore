@@ -4,3 +4,4 @@ data/
 test_mix/
 test_double/
 *.o
+.clang-format
