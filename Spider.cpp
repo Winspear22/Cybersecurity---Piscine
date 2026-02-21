@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 20:12:40 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/21 21:04:32 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/21 21:12:19 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 Spider::Spider(void)
 {
 	std::cout << "Constructeur de Spider utilisé." << std::endl;
-	this->_depthNumber = 0;
+	this->_depthNumber = 5;
 	this->_isRecursive = false;
 	this->_pathOfDownload = "./data/";
 }
