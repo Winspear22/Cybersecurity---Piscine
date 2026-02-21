@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 20:12:40 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/21 22:28:08 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/21 22:58:33 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,14 @@ void			Spider::setUrl(std::string url)
 void	Spider::run(void)
 {
 	UseCurl useCurl;
-	useCurl.getHtml(this->_url);
+	std::string html;
 	
+	html = useCurl.getHtml(this->_url);
+	if (html.empty())
+		std::cerr << "Error: la variable HTML est vide." << std::endl;
+	else
+	{
+		std::cout << "Succès ! " << html.size() << " caractères reçus." << std::endl;
+        std::cout << "Aperçu : " << html.substr(0, 100) << "..." << std::endl;
+    }
 }
