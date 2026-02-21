@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 20:12:57 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/21 20:15:25 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/21 20:43:26 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 # include <iostream>
 # include <vector>
+# include <unistd.h>
+# include <curl/curl.h>
 
 # define SUCCESS true
 # define FAILURE false
