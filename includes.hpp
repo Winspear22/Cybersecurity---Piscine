@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 20:12:57 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/21 22:42:18 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/21 23:16:10 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <stdexcept>
 #include <unistd.h>
 #include <vector>
-#
+
 
 #define SUCCESS true
 #define FAILURE false
