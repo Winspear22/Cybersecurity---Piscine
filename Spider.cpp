@@ -6,11 +6,12 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 20:12:40 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/21 21:25:40 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/21 22:28:08 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Spider.hpp"
+#include "UseCurl.hpp"
 
 Spider::Spider(void)
 {
@@ -81,4 +82,11 @@ std::string		Spider::getUrl(void)
 void			Spider::setUrl(std::string url)
 {
 	this->_url = url;
+}
+
+void	Spider::run(void)
+{
+	UseCurl useCurl;
+	useCurl.getHtml(this->_url);
+	
 }

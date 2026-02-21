@@ -6,7 +6,7 @@
 #    By: adnen <adnen@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/21 19:55:50 by adnen             #+#    #+#              #
-#    Updated: 2026/02/21 20:25:40 by adnen            ###   ########.fr        #
+#    Updated: 2026/02/21 22:11:12 by adnen            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ LIBS		= -lcurl
 SRC_DIR		= ./
 OBJ_DIR		= obj/
 
-SRCS		= main.cpp Spider.cpp
+SRCS		= main.cpp Spider.cpp UseCurl.cpp
 OBJS		= $(SRCS:%.cpp=$(OBJ_DIR)%.o)
 
 # Colors for pretty output
