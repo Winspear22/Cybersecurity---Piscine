@@ -6,7 +6,7 @@
 #    By: adnen <adnen@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/21 19:55:50 by adnen             #+#    #+#              #
-#    Updated: 2026/02/21 19:55:53 by adnen            ###   ########.fr        #
+#    Updated: 2026/02/21 20:07:32 by adnen            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,6 +14,7 @@ NAME		= spider
 
 CXX			= c++
 CXXFLAGS	= -Wall -Wextra -Werror -std=c++17
+LIBS		= -lcurl
 
 SRC_DIR		= ./
 OBJ_DIR		= obj/
@@ -29,7 +30,7 @@ RESET		= \033[0m
 all: $(NAME)
 
 $(NAME): $(OBJ_DIR) $(OBJS)
-	@$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
+	@$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME) $(LIBS)
 	@echo "$(GREEN)$(NAME) successfully built!$(RESET)"
 	@$(MAKE) clean --no-print-directory
 
