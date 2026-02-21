@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 19:49:01 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/21 21:16:10 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/21 22:53:53 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,9 @@ int main(int argc, char **argv)
     }
     int opt;
     Spider spider;
+    CURLcode global_res = curl_global_init(CURL_GLOBAL_ALL);
+    if (global_res != 0)
+        std::cout << "Error: " << curl_easy_strerror(global_res) << std::endl;
     while ((opt = getopt(argc, argv, "rl:p:")) != -1)
     {
         switch (opt)
@@ -62,10 +65,7 @@ int main(int argc, char **argv)
         std::cerr << "Error, Missing URL." << std::endl;
         return (EXIT_FAILURE);
     }
-    std::cout << "--- Config Spider ---" << std::endl;
-    std::cout << "URL : " << spider.getUrl() << std::endl;
-    std::cout << "Recursive : " << (spider.getIsRecursive() ? "Oui" : "Non") << std::endl;
-    std::cout << "Depth : " << spider.getDepthNumber() << std::endl;
-    std::cout << "Path : " << spider.getPathOfDownload() << std::endl;
-    return (0);
+    spider.run();
+    curl_global_cleanup();
+    return (EXIT_SUCCESS);
 }
