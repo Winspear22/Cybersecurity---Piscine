@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 20:12:40 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/21 21:12:19 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/21 21:24:34 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,21 @@ Spider::Spider(void)
 
 Spider::Spider(const Spider &src)
 {
-	(void)src;
 	std::cout << "Constructeur de recopie Spider utilisé." << std::endl;
+	*this = src;
 }
 
 const Spider &Spider::operator=(const Spider &src)
 {
 	std::cout << "Operatot= de Spider utilisé." << std::endl;
-	(void)src;
-	return *this;
+    // 1. On vérifie si on n'est pas en train de se copier soi-même
+    if (this == &src)
+        return *this;
+    this->_depthNumber = src._depthNumber;
+    this->_isRecursive = src._isRecursive;
+    this->_pathOfDownload = src._pathOfDownload;
+    this->_url = src._url;
+    return *this;
 }
 
 Spider::~Spider(void)
