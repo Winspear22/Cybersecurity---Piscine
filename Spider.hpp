@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 20:12:43 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/21 20:50:17 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/21 21:04:01 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,14 @@ class Spider
 		void			setDepthNumber(int nb);
 		std::string		getPathOfDownload(void);
 		void			setPathOfDownload(std::string path);
+		std::string		getUrl(void);
+		void			setUrl(std::string url);
 
 	private:
 		bool			_isRecursive;
 		int				_depthNumber;
 		std::string		_pathOfDownload;
+		std::string		_url;
 };
 
 #endif
