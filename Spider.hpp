@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 20:12:43 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/21 20:22:31 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/21 20:50:17 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,17 @@ class Spider
 		const Spider &operator=(const Spider &src);
 		~Spider(void);
 
+		bool			getIsRecursive(void);
+		void			setIsRecursive(bool isRecursive);
+		int				getDepthNumber(void);
+		void			setDepthNumber(int nb);
+		std::string		getPathOfDownload(void);
+		void			setPathOfDownload(std::string path);
+
 	private:
+		bool			_isRecursive;
+		int				_depthNumber;
+		std::string		_pathOfDownload;
 };
 
 #endif

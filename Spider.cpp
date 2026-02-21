@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 20:12:40 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/21 20:26:25 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/21 20:52:22 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,4 +33,34 @@ const Spider &Spider::operator=(const Spider &src)
 Spider::~Spider(void)
 {
 	std::cout << "Destructeur de Spider utilisé." << std::endl;
+}
+
+bool			Spider::getIsRecursive(void)
+{
+	return this->_isRecursive;
+}
+
+void			Spider::setIsRecursive(bool isRecursive)
+{
+	this->_isRecursive = isRecursive;
+}
+
+int				Spider::getDepthNumber(void)
+{
+	return this->_depthNumber;
+}
+
+void			Spider::setDepthNumber(int nb)
+{
+	this->_depthNumber = nb;
+}
+
+std::string		Spider::getPathOfDownload(void)
+{
+	return this->_pathOfDownload;
+}
+
+void			Spider::setPathOfDownload(std::string path)
+{
+	this->_pathOfDownload = path;
 }
