@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 20:12:43 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/21 21:04:01 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/21 22:00:31 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ class Spider
 		Spider(const Spider &src);
 		const Spider &operator=(const Spider &src);
 		~Spider(void);
+
+
 
 		bool			getIsRecursive(void);
 		void			setIsRecursive(bool isRecursive);
