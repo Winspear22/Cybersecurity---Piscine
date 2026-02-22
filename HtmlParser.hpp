@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/22 15:46:40 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/22 15:47:00 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/22 15:58:04 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,9 @@ class HtmlParser
 		HtmlParser(const HtmlParser &src);
 		const HtmlParser &operator=(const HtmlParser &src);
 		~HtmlParser(void);
+
+		static std::vector<std::string> extractImagesFromHtml(const std::string &html);
+		
 
 	private:
 };

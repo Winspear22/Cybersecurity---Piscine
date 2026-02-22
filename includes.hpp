@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 20:12:57 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/21 23:16:10 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/22 15:56:52 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,9 @@
 
 #include <curl/curl.h>
 #include <iostream>
-#include <stdexcept>
 #include <unistd.h>
+#include <regex>
 #include <vector>
-
 
 #define SUCCESS true
 #define FAILURE false
