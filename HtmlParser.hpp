@@ -1,0 +1,29 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   HtmlParser.hpp                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/02/22 15:46:40 by adnen             #+#    #+#             */
+/*   Updated: 2026/02/22 15:47:00 by adnen            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef __HTML_PARSER_HPP
+# define __HTML_PARSER_HPP
+
+#include "includes.hpp"
+
+class HtmlParser
+{
+	public:
+		HtmlParser(void);
+		HtmlParser(const HtmlParser &src);
+		const HtmlParser &operator=(const HtmlParser &src);
+		~HtmlParser(void);
+
+	private:
+};
+
+#endif
