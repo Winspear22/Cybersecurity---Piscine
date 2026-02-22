@@ -6,11 +6,13 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/22 15:46:37 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/22 16:21:28 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/22 17:08:37 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HtmlParser.hpp"
+#include "includes.hpp"
+#include <cstring>
 
 HtmlParser::HtmlParser(void)
 {
@@ -61,8 +63,48 @@ std::vector<std::string> HtmlParser::extractImagesFromHtml(const std::string &ht
 	{
 		std::smatch match = *it;
 		std::string imgUrl = match[1].str();
-		urls.push_back(imgUrl);
+		if (HtmlParser::hasValidExtensionParticulars(imgUrl))
+			urls.push_back(imgUrl);
 		it++;
 	}
 	return urls;
+}
+
+bool HtmlParser::hasValidExtensionBasic(const std::string &url)
+{
+	size_t			pos;
+	std::string		image_extension;
+	std::string		tab_ext[] = {".jpeg", ".jpg", ".png", ".gif", ".bmp"};
+	
+	pos = url.rfind('.');
+	if (pos != std::string::npos)
+	{
+		image_extension = url.substr(pos);
+		if (image_extension == tab_ext[0])
+			return SUCCESS;
+		else if (image_extension == tab_ext[1])
+			return SUCCESS;
+		else if (image_extension == tab_ext[2])
+			return SUCCESS;
+		else if (image_extension == tab_ext[3])
+			return SUCCESS;
+		else if (image_extension == tab_ext[4])
+			return SUCCESS;
+		else
+		 	return FAILURE;
+	}
+	return FAILURE;
+}
+// Cas particulier du .jpg?size=small
+bool HtmlParser::hasValidExtensionParticulars(const std::string &url)
+{
+	size_t			end_pos;
+	std::string		clean_url;
+	
+	end_pos = url.find_first_of("?#");
+	if (end_pos == std::string::npos)
+		clean_url = url;
+	else
+		clean_url = url.substr(0, end_pos);
+	return (HtmlParser::hasValidExtensionBasic(clean_url));
 }
