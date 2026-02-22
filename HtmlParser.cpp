@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/22 15:46:37 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/22 17:08:37 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/22 17:13:47 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,11 +75,18 @@ bool HtmlParser::hasValidExtensionBasic(const std::string &url)
 	size_t			pos;
 	std::string		image_extension;
 	std::string		tab_ext[] = {".jpeg", ".jpg", ".png", ".gif", ".bmp"};
+	size_t			i;
 	
 	pos = url.rfind('.');
 	if (pos != std::string::npos)
 	{
 		image_extension = url.substr(pos);
+		i = 0;
+		while (i < image_extension.length())
+		{
+			image_extension[i] = std::tolower(image_extension[i]);
+			i++;
+		}
 		if (image_extension == tab_ext[0])
 			return SUCCESS;
 		else if (image_extension == tab_ext[1])
