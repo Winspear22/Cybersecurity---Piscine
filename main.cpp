@@ -6,13 +6,13 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 19:49:01 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/21 23:09:12 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/22 15:43:54 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes.hpp"
+#include "ArgsParser.hpp"
 #include "Spider.hpp"
-#include "UrlUtils.hpp"
+#include "includes.hpp"
 
 int main(int argc, char **argv)
 {
@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     CURLcode global_res = curl_global_init(CURL_GLOBAL_ALL);
     if (global_res != 0)
         std::cout << "Error: " << curl_easy_strerror(global_res) << std::endl;
-    if (UrlUtils::parseArguments(argc, argv, spider) == FAILURE)
+    if (ArgsParser::parseArguments(argc, argv, spider) == FAILURE)
         return (EXIT_FAILURE);
     spider.run();
     curl_global_cleanup();
