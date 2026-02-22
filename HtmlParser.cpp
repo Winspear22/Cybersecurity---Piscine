@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/22 15:46:37 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/22 16:09:14 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/22 16:21:28 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ std::vector<std::string> HtmlParser::extractImagesFromHtml(const std::string &ht
 {
 	
 	std::vector<std::string> urls;
-	std::regex imgRegex(R"(<img[^>]+src\s*=\s*["']([^"']+)["']))", std::regex::icase);
+	std::regex imgRegex(R"(<img[^>]+src\s*=\s*["']([^"']+)["'])", std::regex::icase);
 
 	std::sregex_iterator it;
 	std::sregex_iterator begin(html.begin(), html.end(), imgRegex);
@@ -64,9 +64,5 @@ std::vector<std::string> HtmlParser::extractImagesFromHtml(const std::string &ht
 		urls.push_back(imgUrl);
 		it++;
 	}
-
-	
-		
-	
 	return urls;
 }

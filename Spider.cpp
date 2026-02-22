@@ -6,12 +6,13 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 20:12:40 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/21 23:24:10 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/22 16:17:59 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Spider.hpp"
 #include "UseCurl.hpp"
+#include "HtmlParser.hpp"
 
 Spider::Spider(void)
 {
@@ -91,10 +92,16 @@ void Spider::run(void)
 
 	html = useCurl.getHtml(this->_url);
 	if (html.empty())
-    std::cerr << "Error: la variable HTML est vide." << std::endl;
+    	std::cerr << "Error: la variable HTML est vide." << std::endl;
 	else
 	{
-		std::cout << "Succès ! " << html.size() << " caractères reçus." << std::endl;
-		std::cout << "Aperçu : " << html.substr(0, 100) << "..." << std::endl;
+		std::vector<std::string> imagesUrls = HtmlParser::extractImagesFromHtml(html);
+		std::cout << imagesUrls.size() << " images trouvées." << std::endl;
+		size_t i = 0;
+		while (i < imagesUrls.size())
+		{
+			std::cout << imagesUrls[i] << std::endl;
+			i++;
+		}
 	}
 }
