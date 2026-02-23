@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/22 17:28:11 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/22 17:28:19 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/23 02:20:30 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,22 @@ class UrlParser
 		UrlParser(const UrlParser &src);
 		const UrlParser &operator=(const UrlParser &src);
 		~UrlParser(void);
+		
+		std::string getUrl();
+		std::string getProtocol();
+		std::string getHost();
+		std::string getBasePath();
+
+		void		setUrl(std::string src);
+		void		setProtocol(std::string src);
+		void		setHost(std::string src);
+		void		setBasePath(std::string src);
 
 	private:
+    std::string _url;
+    std::string _protocol;
+    std::string _host;
+    std::string _basePath;
 };
 
 #endif
