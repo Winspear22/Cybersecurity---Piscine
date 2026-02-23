@@ -6,15 +6,15 @@
 #    By: adnen <adnen@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/21 19:55:50 by adnen             #+#    #+#              #
-#    Updated: 2026/02/22 17:28:48 by adnen            ###   ########.fr        #
+#    Updated: 2026/02/23 01:56:39 by adnen            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= spider
 
 CXX			= c++
-CXXFLAGS	= -Wall -Wextra -Werror -std=c++17
-LIBS		= -lcurl
+CXXFLAGS	= -Wall -Wextra -Werror -std=c++17 $(shell curl-config --cflags)
+LIBS		= $(shell curl-config --libs)
 
 SRC_DIR		= ./
 OBJ_DIR		= obj/
