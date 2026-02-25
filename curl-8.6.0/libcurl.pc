@@ -25,7 +25,7 @@
 # This should most probably benefit from getting a "Requires:" field added
 # dynamically by configure.
 #
-prefix=/home/user42/Desktop/spider/curl-8.6.0/../curl_build
+prefix=/home/user42/Desktop/spider2/curl_build
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

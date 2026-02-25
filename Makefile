@@ -16,7 +16,7 @@ CXX			= c++
 # Paths for local curl build
 CURL_SRC    = curl-8.6.0
 CURL_TAR    = curl-8.6.0.tar.gz
-CURL_DIR    = $(PWD)/curl_build
+CURL_DIR    = $(CURDIR)/curl_build
 LIBCURL     = $(CURL_DIR)/lib/libcurl.a
 
 CXXFLAGS	= -Wall -Wextra -Werror -std=c++17 -I$(CURL_DIR)/include
@@ -42,9 +42,10 @@ $(NAME): $(LIBCURL) $(OBJ_DIR) $(OBJS)
 $(LIBCURL):
 	@if [ ! -d "$(CURL_DIR)" ]; then \
 		echo "$(YELLOW)Compiling libcurl locally (this may take a minute)...$(RESET)"; \
-		if [ ! -d "$(CURL_SRC)" ]; then tar -xf $(CURL_TAR); fi; \
-		cd $(CURL_SRC) && ./configure --prefix=$(CURL_DIR) --without-ssl --without-libpsl --without-libidn2 --disable-shared > /dev/null 2>&1; \
-		make -j$(shell nproc) > /dev/null 2>&1 && make install > /dev/null 2>&1; \
+		rm -rf $(CURL_SRC); \
+		tar -xf $(CURL_TAR); \
+		cd $(CURL_SRC) && ./configure --prefix=$(CURL_DIR) --without-ssl --without-libpsl --without-libidn2 --disable-shared > /dev/null 2>&1 && \
+		make -j$(shell nproc) > /dev/null 2>&1 && make install > /dev/null 2>&1 && \
 		echo "$(GREEN)libcurl compiled successfully!$(RESET)"; \
 	fi
 

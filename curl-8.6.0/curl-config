@@ -23,7 +23,7 @@
 #
 ###########################################################################
 
-prefix="/home/user42/Desktop/spider/curl-8.6.0/../curl_build"
+prefix="/home/user42/Desktop/spider2/curl_build"
 exec_prefix=${prefix}
 includedir=${prefix}/include
 cppflag_curl_staticlib=-DCURL_STATICLIB
@@ -182,7 +182,7 @@ while test $# -gt 0; do
         ;;
 
     --configure)
-        echo " '--prefix=/home/user42/Desktop/spider/curl-8.6.0/../curl_build' '--without-ssl' '--without-libpsl' '--without-libidn2' '--disable-shared'"
+        echo " '--prefix=/home/user42/Desktop/spider2/curl_build' '--without-ssl' '--without-libpsl' '--without-libidn2' '--disable-shared'"
         ;;
 
     *)
