@@ -62,7 +62,8 @@ clean:
 
 fclean: clean
 	@rm -f $(NAME)
-	@echo "$(RED)$(NAME) removed.$(RESET)"
+	@rm -rf $(CURL_DIR) $(CURL_SRC)
+	@echo "$(RED)$(NAME) and local libcurl removed.$(RESET)"
 
 re: fclean all
 

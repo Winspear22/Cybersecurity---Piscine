@@ -1,8 +1,8 @@
 spider
 obj/
 curl_build/
+curl-8.6.0/
 data/*
-!data/.gitkeep
 my/
 folder/
 .vscode/
