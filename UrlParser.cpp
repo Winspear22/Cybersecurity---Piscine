@@ -19,7 +19,7 @@ UrlParser::UrlParser(void)
 
 UrlParser::UrlParser(const UrlParser &src)
 {
-	std::cout << "Constructeur de recopie UrlParser utilisé." << std::endl;
+	std::cout << "Constructeur de copie de UrlParser utilisé." << std::endl;
 	*this = src;
 }
 

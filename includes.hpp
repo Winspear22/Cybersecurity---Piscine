@@ -19,6 +19,12 @@
 #include <regex>
 #include <vector>
 #include <cctype>
+#include <set>
+#include <queue>
+#include <fstream>
+#include <sys/stat.h>
+#include <algorithm>
+#include <sstream>
 
 #define SUCCESS true
 #define FAILURE false

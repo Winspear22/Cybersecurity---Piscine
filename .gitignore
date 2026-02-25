@@ -1,2 +1,12 @@
 spider
+obj/
+curl_build/
+data/*
+!data/.gitkeep
+my/
+folder/
 .vscode/
+*.o
+*.a
+*.so
+*.d
