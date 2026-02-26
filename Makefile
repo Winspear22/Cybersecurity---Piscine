@@ -6,7 +6,7 @@
 #    By: adnen <adnen@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/21 19:55:50 by adnen             #+#    #+#              #
-#    Updated: 2026/02/23 01:56:39 by adnen            ###   ########.fr        #
+#    Updated: 2026/02/26 16:20:58 by adnen            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ CURL_DIR    = $(CURDIR)/curl_build
 LIBCURL     = $(CURL_DIR)/lib/libcurl.a
 
 CXXFLAGS	= -Wall -Wextra -Werror -std=c++17 -I$(CURL_DIR)/include
-LIBS		= $(LIBCURL) -lpthread
+LIBS		= $(LIBCURL) -lpthread -lssl -lcrypto
 
 SRC_DIR		= ./
 OBJ_DIR		= obj/
@@ -41,10 +41,10 @@ $(NAME): $(LIBCURL) $(OBJ_DIR) $(OBJS)
 
 $(LIBCURL):
 	@if [ ! -d "$(CURL_DIR)" ]; then \
-		echo "$(YELLOW)Compiling libcurl locally (this may take a minute)...$(RESET)"; \
+		echo "$(YELLOW)Compiling libcurl locally with OpenSSL support (this may take a minute)...$(RESET)"; \
 		rm -rf $(CURL_SRC); \
 		tar -xf $(CURL_TAR); \
-		cd $(CURL_SRC) && ./configure --prefix=$(CURL_DIR) --without-ssl --without-libpsl --without-libidn2 --disable-shared > /dev/null 2>&1 && \
+		cd $(CURL_SRC) && ./configure --prefix=$(CURL_DIR) --with-openssl --without-libpsl --without-libidn2 --disable-shared > /dev/null 2>&1 && \
 		make -j$(shell nproc) > /dev/null 2>&1 && make install > /dev/null 2>&1 && \
 		echo "$(GREEN)libcurl compiled successfully!$(RESET)"; \
 	fi

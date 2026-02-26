@@ -6,11 +6,12 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/22 17:28:08 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/23 02:21:43 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/26 16:27:05 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "UrlParser.hpp"
+#include <cstddef>
 
 UrlParser::UrlParser(void)
 {
@@ -28,6 +29,10 @@ const UrlParser &UrlParser::operator=(const UrlParser &src)
 	std::cout << "Operator= de UrlParser utilisé." << std::endl;
 	if (this == &src)
 		return *this;
+	this->_url = src._url;
+	this->_protocol = src._protocol;
+	this->_host = src._host;
+	this->_basePath = src._basePath;
 	return *this;
 }
 
@@ -75,4 +80,19 @@ void UrlParser::setHost(std::string src)
 void UrlParser::setBasePath(std::string src)
 {
 	this->_basePath = src;
+}
+
+void UrlParser::parseUrl(std::string src)
+{
+	this->_url = src;
+	size_t pos = src.find("://");
+	if (pos != std::string::npos)
+	    this->_protocol = src.substr(0, pos + 3);
+	std::cout << "Protocol : " << this->_protocol << std::endl;
+	pos = src.find('/');
+	if (pos != std::string::npos)
+		this->_host = src.substr(0, pos + 10);
+	std::cout << "Host : " << this->_protocol << std::endl;
+
+	
 }
