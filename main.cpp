@@ -6,13 +6,14 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 19:49:01 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/22 15:43:54 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/26 17:42:01 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ArgsParser.hpp"
 #include "Spider.hpp"
 #include "includes.hpp"
+#include "UrlParser.hpp"
 
 int main(int argc, char **argv)
 {
