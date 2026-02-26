@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 20:12:40 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/26 16:14:25 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/26 16:58:53 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ void Spider::run(void)
 		test.parseUrl(this->_url);
 		while (i < imagesUrls.size())
 		{
-			std::cout << imagesUrls[i] << std::endl;
+			std::cout << test.resolveUrl(imagesUrls[i]) << std::endl;
 			i++;
 		}
 	}

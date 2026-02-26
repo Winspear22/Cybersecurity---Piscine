@@ -6,12 +6,13 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/22 17:28:08 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/26 16:42:03 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/26 16:58:46 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "UrlParser.hpp"
 #include <cstddef>
+#include <string>
 
 UrlParser::UrlParser(void) {
   std::cout << "Constructeur de UrlParser utilisé." << std::endl;
@@ -73,4 +74,17 @@ void UrlParser::parseUrl(std::string src)
 
   std::cout << "Host : " << this->_host << std::endl;
   std::cout << "basePath : " << this->_basePath << std::endl;
+}
+
+std::string UrlParser::resolveUrl(std::string src)
+{
+	this->parseUrl(src);
+	if (src.find("http://") == 0 || src.find("https://") == 0)
+		return src;
+	else if (src.find("//") == 0)
+		return this->_protocol + src.substr(2);
+	else if (src.find('/') == 0)
+		return this->_host + src;
+	else
+		return this->_basePath + src;
 }

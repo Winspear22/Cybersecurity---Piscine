@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/22 17:28:11 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/26 16:13:58 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/26 16:50:35 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ class UrlParser
 		void		setBasePath(std::string src);
 
 		void		parseUrl(std::string src);
+		std::string	resolveUrl(std::string src);
 
 	private:
     std::string _url;
