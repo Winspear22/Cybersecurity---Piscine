@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/22 17:28:08 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/26 16:27:05 by adnen            ###   ########.fr       */
+/*   Updated: 2026/02/26 16:28:52 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ void UrlParser::parseUrl(std::string src)
 	pos = src.find('/');
 	if (pos != std::string::npos)
 		this->_host = src.substr(0, pos + 10);
-	std::cout << "Host : " << this->_protocol << std::endl;
+	std::cout << "Host : " << this->_host << std::endl;
 
 	
 }
