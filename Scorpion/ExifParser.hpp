@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 00:03:45 by adnen             #+#    #+#             */
-/*   Updated: 2026/03/03 00:12:21 by adnen            ###   ########.fr       */
+/*   Updated: 2026/03/03 00:24:18 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,21 +22,21 @@ public:
   const ExifParser &operator=(const ExifParser &other);
   ExifParser(const ExifParser &other);
 
-  /* Point d'entrée public */
+  /* Point d'entrée : affiche les données EXIF basiques d'un fichier */
   static void displayExifData(const std::string &filename);
 
 private:
-  /* Sécurité : vérification des limites avant toute lecture */
+  /* Sécurité : vérifie qu'on ne lit pas hors du fichier */
   static bool _isOffsetSafe(const std::vector<unsigned char> &data,
                             size_t offset, size_t bytesNeeded);
 
-  /* Lecture du fichier binaire en mémoire */
+  /* Charge le fichier en mémoire */
   static std::vector<unsigned char> _readFile(const std::string &filename);
 
-  /* Navigation dans la structure JPEG pour trouver l'EXIF */
+  /* Trouve le début des données EXIF dans un JPEG */
   static int _findExifOffset(const std::vector<unsigned char> &data);
 
-  /* Détection de l'ordre des octets (endianness) */
+  /* Détecte l'ordre des octets : "MM" = big, "II" = little */
   static bool _isBigEndian(const std::vector<unsigned char> &data,
                            size_t offset);
 
@@ -47,22 +47,19 @@ private:
                           bool bigEndian);
 
   /* Lecture d'une chaîne ASCII depuis les données binaires */
-  static std::string _readString(const std::vector<unsigned char> &data,
-                                 size_t offset, size_t maxLen);
+  static std::string _readAsciiTag(const std::vector<unsigned char> &data,
+                                   size_t tiffStart, size_t entryValueOffset,
+                                   uint32_t count, bool bigEndian);
 
-  /* Parsing d'un IFD (Image File Directory) */
+  /* Parse un IFD et affiche les tags qu'on connaît */
   static void _parseIFD(const std::vector<unsigned char> &data,
                         size_t tiffStart, size_t ifdOffset, bool bigEndian,
-                        const std::string &ifdName);
+                        bool isExifSubIFD);
 
-  /* Formatage de la valeur d'un tag selon son type EXIF */
-  static std::string _formatTagValue(const std::vector<unsigned char> &data,
-                                     size_t tiffStart, size_t entryValueOffset,
-                                     uint16_t type, uint32_t count,
-                                     bool bigEndian);
-
-  /* Conversion d'un tag ID en nom lisible */
-  static std::string _getTagName(uint16_t tag, const std::string &ifdName);
+  /* Parsing des métadonnées pour les autres formats */
+  static void _parsePngMetadata(const std::vector<unsigned char> &data);
+  static void _parseGifMetadata(const std::vector<unsigned char> &data);
+  static void _parseBmpMetadata(const std::vector<unsigned char> &data);
 };
 
 #endif
