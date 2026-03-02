@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 23:10:04 by adnen             #+#    #+#             */
-/*   Updated: 2026/03/02 23:10:08 by adnen            ###   ########.fr       */
+/*   Updated: 2026/03/02 23:43:36 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ public:
 	~FileValidator();
 	const FileValidator &operator=(const FileValidator &other);
 	FileValidator(const FileValidator &other);
+
+	static bool isFileOfValidFormat(const std::string &filename);
 
 private:
 
