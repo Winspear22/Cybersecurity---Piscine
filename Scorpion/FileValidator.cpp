@@ -6,43 +6,36 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 23:10:01 by adnen             #+#    #+#             */
-/*   Updated: 2026/03/02 23:50:57 by adnen            ###   ########.fr       */
+/*   Updated: 2026/03/03 00:00:57 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "FileValidator.hpp"
 
-FileValidator::FileValidator()
-{
+FileValidator::FileValidator() {
   std::cout << "FileValidator constructor called." << std::endl;
 }
 
-FileValidator::~FileValidator()
-{
+FileValidator::~FileValidator() {
   std::cout << "FileValidator destructor called." << std::endl;
 }
 
-const FileValidator &FileValidator::operator=(const FileValidator &other)
-{
-  if (this != &other)
-  {
+const FileValidator &FileValidator::operator=(const FileValidator &other) {
+  if (this != &other) {
   }
   std::cout << "FileValidator copy assignment operator called." << std::endl;
   return *this;
 }
 
-FileValidator::FileValidator(const FileValidator &other)
-{
+FileValidator::FileValidator(const FileValidator &other) {
   *this = other;
   std::cout << "FileValidator copy constructor called." << std::endl;
 }
 
-bool FileValidator::isFileOfValidFormat(const std::string &filename)
-{
+bool FileValidator::isFileOfValidFormat(const std::string &filename) {
   // 1. Vérification C++17 si c'est bien un fichier (pas un dossier)
   std::filesystem::path p(filename);
-  if (!std::filesystem::is_regular_file(p))
-  {
+  if (!std::filesystem::is_regular_file(p)) {
     std::cerr << "Error: " << filename << " is not a regular file."
               << std::endl;
     return FAILURE;
@@ -50,13 +43,12 @@ bool FileValidator::isFileOfValidFormat(const std::string &filename)
 
   // 2. Extraire et normaliser l'extension (C++17)
   std::string ext = p.extension().string();
-  std::transform(ext.begin(), ext.end(), ext.begin(), [](unsigned char c)
-  { return std::tolower(c); });
+  std::transform(ext.begin(), ext.end(), ext.begin(),
+                 [](unsigned char c) { return std::tolower(c); });
 
   // 3. Ouverture en binaire
   std::ifstream file(filename, std::ios::binary);
-  if (!file.is_open())
-  {
+  if (!file.is_open()) {
     std::cerr << "Error: Could not open " << filename << std::endl;
     return FAILURE;
   }
@@ -80,8 +72,7 @@ bool FileValidator::isFileOfValidFormat(const std::string &filename)
   else if (bytesRead >= 2 && header[0] == 0x42 && header[1] == 0x4D)
     actualFormat = "BMP";
 
-  if (actualFormat == "UNKNOWN")
-  {
+  if (actualFormat == "UNKNOWN") {
     std::cerr << "Error: " << filename << " format not supported or corrupted."
               << std::endl;
     return FAILURE;
@@ -98,8 +89,11 @@ bool FileValidator::isFileOfValidFormat(const std::string &filename)
     return SUCCESS;
 
   // En cas de mismatch (ex: un .png renommé en .jpg)
+  std::string displayExt = ext;
+  if (ext.empty())
+    displayExt = "none";
   std::cerr << "Error: Mismatch detected for " << filename << " (Extension is "
-            << (ext.empty() ? "none" : ext) << " but file is actually "
-            << actualFormat << ")." << std::endl;
+            << displayExt << " but file is actually " << actualFormat << ")."
+            << std::endl;
   return FAILURE;
 }
