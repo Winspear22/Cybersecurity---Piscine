@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 17:49:38 by adnen             #+#    #+#             */
-/*   Updated: 2026/03/02 17:50:03 by adnen            ###   ########.fr       */
+/*   Updated: 2026/03/02 18:07:07 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #define __IMAGE_DOWNLOADER_HPP__
 
 #include "includes.hpp"
+#include <filesystem>
+#include <fstream>
 
 class ImageDownloader {
 public:
@@ -26,7 +28,7 @@ public:
 
 private:
   static size_t _writeToFile(void *ptr, size_t size, size_t nmemb,
-                             FILE *stream);
+                             void *stream);
   static std::string _extractFilename(const std::string &url);
 
   std::string _url;
