@@ -6,13 +6,15 @@
 #    By: adnen <adnen@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/26 00:46:32 by adnen             #+#    #+#              #
-#    Updated: 2026/02/14 15:17:43 by adnen            ###   ########.fr        #
+#    Updated: 2026/03/22 06:51:12 by adnen            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # --- VARIABLES ---
 NAME_SPIDER    = spider
 NAME_SCORPION  = scorpion
+NAME_SP_BONUS  = spider_bonus
+NAME_SC_BONUS  = scorpion_bonus
 
 # Sources Spider
 SRCS_SPIDER    = Spider/main.cpp Spider/Spider.cpp Spider/Saver.cpp Spider/ErrorsHandler.cpp \
@@ -24,15 +26,21 @@ SRCS_SCORPION  = Scorpion/main.cpp Scorpion/Scorpion.cpp \
                  Scorpion/ScorpionGIF.cpp Scorpion/ScorpionBMP.cpp \
                  Scorpion/ScorpionWEBP.cpp
 
+# Sources Bonus
+SRCS_SP_BONUS   = $(addprefix bonus/, $(SRCS_SPIDER))
+SRCS_SC_BONUS   = $(addprefix bonus/, $(SRCS_SCORPION))
+
 # Fichiers Headers
 INCLUDES       = Spider/includes.hpp Spider/Spider.hpp Spider/Saver.hpp \
                  Scorpion/Scorpion.hpp
 
 OBJS_SPIDER    = $(SRCS_SPIDER:.cpp=.o)
 OBJS_SCORPION  = $(SRCS_SCORPION:.cpp=.o)
+OBJS_SP_BONUS   = $(SRCS_SP_BONUS:.cpp=.o)
+OBJS_SC_BONUS   = $(SRCS_SC_BONUS:.cpp=.o)
 
 CC             = g++
-FLAGS          = -Wall -Wextra -Werror -std=c++17 -I./Spider -I./Scorpion
+FLAGS          = -Wall -Wextra -Werror -std=c++17 -I./Spider -I./Scorpion -I./bonus/Spider -I./bonus/Scorpion
 
 # Flag pour linker la librairie curl (uniquement pour spider)
 LIBS_SPIDER    = -lcurl
@@ -60,18 +68,33 @@ $(NAME_SCORPION): $(OBJS_SCORPION)
 	@rm -f $(OBJS_SCORPION)
 	@echo "$(CYAN)✅ Scorpion Terminé ! (Objets nettoyés)$(RESET)"
 
+# Règle Bonus
+bonus: $(NAME_SP_BONUS) $(NAME_SC_BONUS)
+
+$(NAME_SP_BONUS): $(OBJS_SP_BONUS)
+	@echo "$(GREEN)Création de l'exécutable $(NAME_SP_BONUS)...$(RESET)"
+	@$(CC) $(FLAGS) $(OBJS_SP_BONUS) -o $(NAME_SP_BONUS) $(LIBS_SPIDER)
+	@rm -f $(OBJS_SP_BONUS)
+	@echo "$(GREEN)✅ Spider Bonus Terminé !$(RESET)"
+
+$(NAME_SC_BONUS): $(OBJS_SC_BONUS)
+	@echo "$(CYAN)Création de l'exécutable $(NAME_SC_BONUS)...$(RESET)"
+	@$(CC) $(FLAGS) $(OBJS_SC_BONUS) -o $(NAME_SC_BONUS)
+	@rm -f $(OBJS_SC_BONUS)
+	@echo "$(CYAN)✅ Scorpion Bonus Terminé !$(RESET)"
+
 # Compilation des .cpp en .o
 %.o: %.cpp
 	@$(CC) $(FLAGS) -c $< -o $@
 
 clean:
-	@rm -f $(OBJS_SPIDER) $(OBJS_SCORPION)
+	@rm -f $(OBJS_SPIDER) $(OBJS_SCORPION) $(OBJS_SP_BONUS) $(OBJS_SC_BONUS)
 	@echo "Objets supprimés."
 
 fclean: clean
-	@rm -f $(NAME_SPIDER) $(NAME_SCORPION)
+	@rm -f $(NAME_SPIDER) $(NAME_SCORPION) $(NAME_SP_BONUS) $(NAME_SC_BONUS)
 	@echo "Exécutables supprimés."
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re bonus
