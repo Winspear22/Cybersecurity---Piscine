@@ -6,10 +6,11 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/08 15:53:12 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/14 15:35:49 by adnen            ###   ########.fr       */
+/*   Updated: 2026/03/22 07:16:15 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "MetadataEditor.hpp"
 #include "ScorpionBMP.hpp"
 #include "ScorpionGIF.hpp"
 #include "ScorpionJPEG.hpp"
@@ -18,21 +19,36 @@
 
 int main(int argc, char **argv)
 {
-    int i;
-
-    i = 0;
     if (argc < 2)
     {
-        std::cout << BOLD_CYAN << "Usage: ./scorpion FILE1 [FILE2 ...]" << RESET << std::endl;
+        std::cout << BOLD_CYAN << "Usage: ./scorpion_bonus [--delete FILE | --modify FILE TAG VALUE | FILE1 FILE2 ...]"
+                  << RESET << std::endl;
         return 1;
     }
-    else
+
+    std::string firstArg = argv[1];
+
+    // --- Option --delete ---
+    if (firstArg == "--delete")
     {
-        while (++i < argc)
+        if (argc < 3)
         {
-            std::cout << BOLD_CYAN << "\n--- Analyzing: " << argv[i] << " ---" << RESET << std::endl;
-            Scorpion::FileIdentification(argv[i]);
+            std::cerr << BOLD_RED << "Usage: ./scorpion_bonus --delete FILE"
+                      << RESET << std::endl;
+            return 1;
         }
+        if (MetadataEditor::deleteMetadata(argv[2]))
+            return 0;
+        return 1;
+    }
+
+    // --- Mode normal (analyse) ---
+    int i = 0;
+    while (++i < argc)
+    {
+        std::cout << BOLD_CYAN << "\n--- Analyzing: " << argv[i] << " ---"
+                  << RESET << std::endl;
+        Scorpion::FileIdentification(argv[i]);
     }
     return 0;
 }

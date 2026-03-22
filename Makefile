@@ -6,7 +6,7 @@
 #    By: adnen <adnen@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/01/26 00:46:32 by adnen             #+#    #+#              #
-#    Updated: 2026/03/22 06:51:12 by adnen            ###   ########.fr        #
+#    Updated: 2026/03/22 07:33:43 by adnen            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,6 +15,7 @@ NAME_SPIDER    = spider
 NAME_SCORPION  = scorpion
 NAME_SP_BONUS  = spider_bonus
 NAME_SC_BONUS  = scorpion_bonus
+NAME_SC_GUI    = scorpion_gui
 
 # Sources Spider
 SRCS_SPIDER    = Spider/main.cpp Spider/Spider.cpp Spider/Saver.cpp Spider/ErrorsHandler.cpp \
@@ -28,7 +29,17 @@ SRCS_SCORPION  = Scorpion/main.cpp Scorpion/Scorpion.cpp \
 
 # Sources Bonus
 SRCS_SP_BONUS   = $(addprefix bonus/, $(SRCS_SPIDER))
-SRCS_SC_BONUS   = $(addprefix bonus/, $(SRCS_SCORPION))
+SRCS_SC_BONUS   = bonus/Scorpion/main.cpp bonus/Scorpion/Scorpion.cpp \
+                  bonus/Scorpion/ScorpionJPEG.cpp bonus/Scorpion/ScorpionPNG.cpp \
+                  bonus/Scorpion/ScorpionGIF.cpp bonus/Scorpion/ScorpionBMP.cpp \
+                  bonus/Scorpion/ScorpionWEBP.cpp bonus/Scorpion/MetadataEditor.cpp
+
+# Sources GUI (GTK3)
+SRCS_SC_GUI     = bonus/Scorpion/gui_main.cpp bonus/Scorpion/ScorpionGUI.cpp \
+                  bonus/Scorpion/Scorpion.cpp bonus/Scorpion/MetadataEditor.cpp \
+                  bonus/Scorpion/ScorpionJPEG.cpp bonus/Scorpion/ScorpionPNG.cpp \
+                  bonus/Scorpion/ScorpionGIF.cpp bonus/Scorpion/ScorpionBMP.cpp \
+                  bonus/Scorpion/ScorpionWEBP.cpp
 
 # Fichiers Headers
 INCLUDES       = Spider/includes.hpp Spider/Spider.hpp Spider/Saver.hpp \
@@ -38,12 +49,16 @@ OBJS_SPIDER    = $(SRCS_SPIDER:.cpp=.o)
 OBJS_SCORPION  = $(SRCS_SCORPION:.cpp=.o)
 OBJS_SP_BONUS   = $(SRCS_SP_BONUS:.cpp=.o)
 OBJS_SC_BONUS   = $(SRCS_SC_BONUS:.cpp=.o)
+OBJS_SC_GUI     = $(SRCS_SC_GUI:.cpp=.o)
 
 CC             = g++
 FLAGS          = -Wall -Wextra -Werror -std=c++17 -I./Spider -I./Scorpion -I./bonus/Spider -I./bonus/Scorpion
 
 # Flag pour linker la librairie curl (uniquement pour spider)
 LIBS_SPIDER    = -lcurl
+LIBS_GUI       = $(shell pkg-config --cflags --libs gtk+-3.0)
+FLAGS_GUI      = $(shell pkg-config --cflags gtk+-3.0)
+LINK_GUI       = $(shell pkg-config --libs gtk+-3.0)
 
 # --- COULEURS ---
 GREEN          = \033[1;32m
@@ -69,30 +84,32 @@ $(NAME_SCORPION): $(OBJS_SCORPION)
 	@echo "$(CYAN)✅ Scorpion Terminé ! (Objets nettoyés)$(RESET)"
 
 # Règle Bonus
-bonus: $(NAME_SP_BONUS) $(NAME_SC_BONUS)
+bonus: $(NAME_SP_BONUS) $(NAME_SC_BONUS) $(NAME_SC_GUI)
+	@rm -f $(OBJS_SP_BONUS) $(OBJS_SC_BONUS) $(OBJS_SC_GUI)
+	@echo "$(GREEN)✅ All bonus targets built!$(RESET)"
 
 $(NAME_SP_BONUS): $(OBJS_SP_BONUS)
 	@echo "$(GREEN)Création de l'exécutable $(NAME_SP_BONUS)...$(RESET)"
 	@$(CC) $(FLAGS) $(OBJS_SP_BONUS) -o $(NAME_SP_BONUS) $(LIBS_SPIDER)
-	@rm -f $(OBJS_SP_BONUS)
-	@echo "$(GREEN)✅ Spider Bonus Terminé !$(RESET)"
 
 $(NAME_SC_BONUS): $(OBJS_SC_BONUS)
 	@echo "$(CYAN)Création de l'exécutable $(NAME_SC_BONUS)...$(RESET)"
 	@$(CC) $(FLAGS) $(OBJS_SC_BONUS) -o $(NAME_SC_BONUS)
-	@rm -f $(OBJS_SC_BONUS)
-	@echo "$(CYAN)✅ Scorpion Bonus Terminé !$(RESET)"
+
+$(NAME_SC_GUI): $(OBJS_SC_GUI)
+	@echo "$(CYAN)Création de l'exécutable $(NAME_SC_GUI)...$(RESET)"
+	@$(CC) $(FLAGS) $(OBJS_SC_GUI) -o $(NAME_SC_GUI) $(LINK_GUI)
 
 # Compilation des .cpp en .o
 %.o: %.cpp
-	@$(CC) $(FLAGS) -c $< -o $@
+	@$(CC) $(FLAGS) $(FLAGS_GUI) -c $< -o $@
 
 clean:
-	@rm -f $(OBJS_SPIDER) $(OBJS_SCORPION) $(OBJS_SP_BONUS) $(OBJS_SC_BONUS)
+	@rm -f $(OBJS_SPIDER) $(OBJS_SCORPION) $(OBJS_SP_BONUS) $(OBJS_SC_BONUS) $(OBJS_SC_GUI)
 	@echo "Objets supprimés."
 
 fclean: clean
-	@rm -f $(NAME_SPIDER) $(NAME_SCORPION) $(NAME_SP_BONUS) $(NAME_SC_BONUS)
+	@rm -f $(NAME_SPIDER) $(NAME_SCORPION) $(NAME_SP_BONUS) $(NAME_SC_BONUS) $(NAME_SC_GUI)
 	@echo "Exécutables supprimés."
 
 re: fclean all
