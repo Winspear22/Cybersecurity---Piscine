@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 23:03:02 by adnen             #+#    #+#             */
-/*   Updated: 2026/02/22 17:18:33 by adnen            ###   ########.fr       */
+/*   Updated: 2026/04/02 16:48:38 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,11 @@ bool ArgsParser::parseArguments(int argc, char **argv, Spider &spider)
 				try
 				{
 					spider.setDepthNumber(std::stoi(optarg));
+					if (spider.getDepthNumber() < 0)
+					{
+						std::cerr << "Error: Depth '-l' must be a positive number (e.g. -l 5)." << std::endl;
+						return (FAILURE);
+					}
 				}
 				catch (const std::invalid_argument &e)
 				{
