@@ -6,7 +6,7 @@
 #    By: adnen <adnen@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/21 19:55:50 by adnen             #+#    #+#              #
-#    Updated: 2026/03/03 00:33:02 by adnen            ###   ########.fr        #
+#    Updated: 2026/04/02 16:22:44 by adnen            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ CURL_TAR    	= curl-8.6.0.tar.gz
 CURL_DIR    	= $(CURDIR)/curl_build
 LIBCURL     	= $(CURL_DIR)/lib/libcurl.a
 SPIDER_FLAGS	= -I$(CURL_DIR)/include
-SPIDER_LIBS	= $(LIBCURL) -lpthread -lssl -lcrypto
+SPIDER_LIBS	= $(LIBCURL) -lpthread -lssl -lcrypto -lz -lzstd -lbrotlidec
 
 # Directories
 SPIDER_DIR	= Spider/
