@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 20:49:54 by adnen             #+#    #+#             */
-/*   Updated: 2026/03/22 08:09:56 by adnen            ###   ########.fr       */
+/*   Updated: 2026/04/02 17:25:12 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void Crawler::crawl(const std::string &url, int maxDepth, const std::string &dow
 }
 
 /*
- * _crawlRecursive() — Le coeur du Spider 🕷️
+ * _crawlRecursive() — Le coeur du Spider
  *
  * Algorithme :
  * 1. Vérifier les conditions d'arrêt (profondeur, déjà visité)

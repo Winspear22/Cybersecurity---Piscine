@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/22 15:46:37 by adnen             #+#    #+#             */
-/*   Updated: 2026/03/02 20:40:57 by adnen            ###   ########.fr       */
+/*   Updated: 2026/04/02 17:51:34 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ bool HtmlParser::hasValidExtensionParticulars(const std::string &url)
 	size_t end_pos;
 	std::string clean_url;
 
-	end_pos = url.find_first_of("?#");
+	end_pos = url.find_first_of("?#"); // le '#' est pour la gestion des ancre ex : https://site.com/image.jpg?v=1.2#top récupère que l'url sans le ?v=1.2#top
 	if (end_pos == std::string::npos)
 		clean_url = url;
 	else
