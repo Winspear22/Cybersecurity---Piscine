@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/21 23:03:02 by adnen             #+#    #+#             */
-/*   Updated: 2026/04/02 16:48:38 by adnen            ###   ########.fr       */
+/*   Updated: 2026/04/02 17:24:21 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,12 @@
 
 ArgsParser::ArgsParser(void)
 {
-    std::cout << "Constructeur de ArgsParser utilisé." << std::endl;
+	std::cout << "Constructeur de ArgsParser utilisé." << std::endl;
 }
 
 ArgsParser::ArgsParser(const ArgsParser &src)
 {
-    std::cout << "Constructeur de recopie ArgsParser utilisé." << std::endl;
+	std::cout << "Constructeur de recopie ArgsParser utilisé." << std::endl;
 	*this = src;
 }
 
@@ -54,13 +54,16 @@ bool ArgsParser::parseArguments(int argc, char **argv, Spider &spider)
 					spider.setDepthNumber(std::stoi(optarg));
 					if (spider.getDepthNumber() < 0)
 					{
-						std::cerr << "Error: Depth '-l' must be a positive number (e.g. -l 5)." << std::endl;
+						std::cerr
+							<< "Error: Depth '-l' must be a positive number (e.g. -l 5)."
+							<< std::endl;
 						return (FAILURE);
 					}
 				}
 				catch (const std::invalid_argument &e)
 				{
-					std::cerr << "Error: Depth '-l' must be a valid number (e.g. -l 5)." << std::endl;
+					std::cerr << "Error: Depth '-l' must be a valid number (e.g. -l 5)."
+								<< std::endl;
 					return (FAILURE);
 				}
 				catch (const std::out_of_range &e)
@@ -70,19 +73,33 @@ bool ArgsParser::parseArguments(int argc, char **argv, Spider &spider)
 				}
 				break;
 			case 'p':
+				if (std::string(optarg).empty())
+				{
+					std::cerr << "Error: Path '-p' must not be empty." << std::endl;
+					return (FAILURE);
+				}
 				spider.setPathOfDownload(optarg);
 				break;
 			case '?':
 				std::cerr << "Error, wrong set of options." << std::endl;
-				return FAILURE;
+				return (FAILURE);
 		}
 	}
 	if (optind < argc)
-		spider.setUrl(argv[optind]);
+	{
+		std::string url = argv[optind];
+		if (url.find("http://") != 0 && url.find("https://") != 0)
+		{
+			std::cerr << "Error: URL must start with http:// or https://"
+						<< std::endl;
+			return (FAILURE);
+		}
+		spider.setUrl(url);
+	}
 	else
 	{
-		std::cerr << "Error, Missing URL." << std::endl;
-		return FAILURE;
+		std::cerr << "Error: Missing URL." << std::endl;
+		return (FAILURE);
 	}
-	return SUCCESS;
+	return (SUCCESS);
 }
