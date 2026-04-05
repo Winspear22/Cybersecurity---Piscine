@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 23:10:01 by adnen             #+#    #+#             */
-/*   Updated: 2026/04/05 13:07:52 by adnen            ###   ########.fr       */
+/*   Updated: 2026/04/05 15:00:10 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,13 @@ bool FileValidator::isFileOfValidFormat(const std::string &filename)
 
 	// 5. Détection du format réel (Magic Numbers)
 	std::string actualFormat = "UNKNOWN";
-	if (bytesRead >= 3 && header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF)
+	if (bytesRead >= 3 && header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF) // FF D8 FF = JPEG --> FF est un marqueur de début de segment en JPEG
 		actualFormat = "JPEG";
-	else if (bytesRead >= 4 && header[0] == 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47)
+	else if (bytesRead >= 4 && header[0] == 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47) /*89 = octet spécial non ASCII pour vérifier que l'image n'est pas corrompue 50 = P 4E = N 47 = G*/
 		actualFormat = "PNG";
-	else if (bytesRead >= 4 && header[0] == 0x47 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x38)
+	else if (bytesRead >= 4 && header[0] == 0x47 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x38) /*47 = G 49 = I 46 = F 38 = 8 on rajoute 3941 pour faire 9a ça fait GIF89a*/
 		actualFormat = "GIF";
-	else if (bytesRead >= 2 && header[0] == 0x42 && header[1] == 0x4D)
+	else if (bytesRead >= 2 && header[0] == 0x42 && header[1] == 0x4D) /*42 = B 4D = M pour BITMAP*/
 		actualFormat = "BMP";
 
 	if (actualFormat == "UNKNOWN")

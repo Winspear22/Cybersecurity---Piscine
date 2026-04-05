@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 00:29:00 by adnen             #+#    #+#             */
-/*   Updated: 2026/04/05 12:14:19 by adnen            ###   ########.fr       */
+/*   Updated: 2026/04/05 15:34:27 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ ExifParserGIF::~ExifParserGIF()
 	std::cout << "ExifParserGIF destructor" << std::endl;
 }
 
-ExifParserGIF::ExifParserGIF(const ExifParserGIF &other)
+ExifParserGIF::ExifParserGIF(const ExifParserGIF &other): ExifParser(other)
 {
 	std::cout << "ExifParserGIF copy constructor" << std::endl;
 	*this = other;
