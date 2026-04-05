@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 00:29:00 by adnen             #+#    #+#             */
-/*   Updated: 2026/04/05 18:14:12 by adnen            ###   ########.fr       */
+/*   Updated: 2026/04/05 19:30:09 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,32 +62,32 @@ void ExifParserPNG::parse(const std::vector<unsigned char> &data)
 	/* Le 1er chunk commence après la signature PNG (8 octets) */
 	size_t pos = 8;
 
-	while (pos + 12 <= data.size())
+	while (pos + 12 <= data.size()) // Un chunk = 4(len) + 4(type) + data + 4(CRC) = 12 octets minimum, donc on vérifie si le fichier est assez grand pour contenir un chunk
 	{
     	/* Longueur du chunk (PNG = toujours big-endian) */
-    	uint32_t chunkLen = _read32(data, pos, true);
+    	uint32_t chunkLen = _read32(data, pos, true); // On lit la longueur du chunk
 
     	/* Type du chunk (4 caractères) */
-    	if (!_isOffsetSafe(data, pos + 4, 4))
+    	if (!_isOffsetSafe(data, pos + 4, 4)) // On vérifie si le fichier est assez grand pour contenir un chunk (ceinture + bretelles)
     		break;
-    	std::string chunkType;
-    	chunkType += static_cast<char>(data[pos + 4]);
-    	chunkType += static_cast<char>(data[pos + 5]);
-    	chunkType += static_cast<char>(data[pos + 6]);
-    	chunkType += static_cast<char>(data[pos + 7]);
+    	std::string chunkType; // Après avoir eu la len, on lit le type du chunk
+    	chunkType += static_cast<char>(data[pos + 4]); // On fait un static_cast pour convertir le caractère en string
+    	chunkType += static_cast<char>(data[pos + 5]); // On cherche les 4 caractères qui composent le type du chunk
+    	chunkType += static_cast<char>(data[pos + 6]); // Ces caractères sont toujours en ASCII
+    	chunkType += static_cast<char>(data[pos + 7]); // Il s'agit de tEXt ou IHDR ou IEND, etc PAR CONTRE ON VEUT EVITER LE IDAT
 
     	size_t chunkDataStart = pos + 8;
 
     	/* ---- IHDR : dimensions de l'image ---- */
-    	if (chunkType == "IHDR" && _isOffsetSafe(data, chunkDataStart, 13))
+    	if (chunkType == "IHDR" && _isOffsetSafe(data, chunkDataStart, 13)) // IHDR vaut toujours 13 octets 
 		{
-      		uint32_t width = _read32(data, chunkDataStart, true);
-      		uint32_t height = _read32(data, chunkDataStart + 4, true);
-      		uint8_t bitDepth = data[chunkDataStart + 8];
-      		uint8_t colorType = data[chunkDataStart + 9];
+      		uint32_t width = _read32(data, chunkDataStart, true); // 0-3 octets : largeur (4 octets)
+      		uint32_t height = _read32(data, chunkDataStart + 4, true); // 4-7 octets : hauteur (4 octets)
+      		uint8_t bitDepth = data[chunkDataStart + 8]; // 8 octets : bit depth (1 octet)
+      		uint8_t colorType = data[chunkDataStart + 9]; // 9 octets : color type (1 octet)
+			// On ignore le reste des octets du chunk IHDR (10-12) car ils sont toujoutd à 0 (il s'agit de Compression method, Filter method, Interlace method)
 
-      		std::cout << "  Dimensions        : " << width << " x " << height
-                << std::endl;
+      		std::cout << "  Dimensions        : " << width << " x " << height << std::endl;
       		std::cout << "  Bit Depth         : " << static_cast<int>(bitDepth) << std::endl;
 
       		std::string colorStr = "Unknown";
@@ -108,30 +108,32 @@ void ExifParserPNG::parse(const std::vector<unsigned char> &data)
     	if (chunkType == "tEXt" && _isOffsetSafe(data, chunkDataStart, chunkLen))
 		{
       		/* Format : keyword\0texte */
-      		std::string keyword;
-      		size_t j = 0;
-      		while (j < chunkLen)
+      		std::string keyword; // keyword est le nom de la métadonnée (Author, Comment, etc.)
+      		size_t j = 0; // j est l'index pour parcourir le chunk tEXt
+      		while (j < chunkLen) // On parcourt le chunk tEXt jusqu'à trouver le \0 (qui sépare le keyword du texte)
 			{
-        		if (data[chunkDataStart + j] == 0)
+        		if (data[chunkDataStart + j] == 0) // Si on trouve le \0, on sort de la boucle
           			break;
-        		keyword += static_cast<char>(data[chunkDataStart + j]);
-        		j++;
+        		keyword += static_cast<char>(data[chunkDataStart + j]); // On ajoute le caractère à la keyword
+        		j++; // On passe au caractère suivant
       		}
       		j++; /* sauter le \0 */
 
-      		std::string textValue;
-      		while (j < chunkLen)
+      		std::string textValue; // textValue est le texte qui suit le \0
+      		while (j < chunkLen) // On parcourt le chunk tEXt jusqu'à la fin
 			{
-        		textValue += static_cast<char>(data[chunkDataStart + j]);
-        		j++;
+        		textValue += static_cast<char>(data[chunkDataStart + j]); // On ajoute le caractère à la textValue
+        		j++; // On passe au caractère suivant
       		}
 
-      		if (!keyword.empty())
-			{
-        		std::cout << "  " << std::left << std::setw(18) << keyword << ": "
-                  << textValue << std::endl;
-      		}
+      		if (!keyword.empty()) // Si la keyword n'est pas vide
+        		std::cout << "  " << std::left << std::setw(18) << keyword << ": " << textValue << std::endl; // On affiche la keyword et la textValue
     	}
+		/* Exemple de sortie pour tEXt: 
+			Author            : Adnen
+  			Comment           : Super photo
+  			Date              : 2026
+		*/
 
     	/* IEND = fin du fichier */
     	if (chunkType == "IEND")
