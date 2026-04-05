@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 00:29:00 by adnen             #+#    #+#             */
-/*   Updated: 2026/04/05 17:46:05 by adnen            ###   ########.fr       */
+/*   Updated: 2026/04/05 18:07:11 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,14 +52,14 @@ const ExifParserJPEG &ExifParserJPEG::operator=(const ExifParserJPEG &other)
  */
 int ExifParserJPEG::_findExifOffset(const std::vector<unsigned char> &data)
 {
-	if (!_isOffsetSafe(data, 0, 2))
+	if (!_isOffsetSafe(data, 0, 2)) // On vérifie si on a assez d'octets pour lire le header SOI
 		return -1;
-	if (data[0] != 0xFF || data[1] != 0xD8)
+	if (data[0] != 0xFF || data[1] != 0xD8) // On vérifie si le header SOI est correct
 		return -1;
 
-	size_t pos = 2;
+	size_t pos = 2; // On passe au segment suivant
 
-	while (pos + 4 < data.size())
+	while (pos + 4 < data.size()) // On parcourt les segments JPEG
 	{
 		if (data[pos] != 0xFF) // Si on rencontre un octet qui n'est pas 0xFF (début de segment JPEG), on sort
 			return -1;
@@ -97,9 +97,14 @@ int ExifParserJPEG::_findExifOffset(const std::vector<unsigned char> &data)
 /* "MM" = Big Endian (Motorola), "II" = Little Endian (Intel) */
 bool ExifParserJPEG::_detectByteOrder(const std::vector<unsigned char> &data, size_t offset)
 {
-	if (!_isOffsetSafe(data, offset, 2))
+	if (!_isOffsetSafe(data, offset, 2)) // On vérifie si on a assez d'octets pour lire l'endianness
 		return false;
-	return (data[offset] == 'M' && data[offset + 1] == 'M');
+
+	char firstByte = data[offset]; // On lit le premier octet
+	char secondByte = data[offset + 1]; // On lit le deuxième octet
+	if (firstByte == 'M' && secondByte == 'M')
+		return true;
+	return false; // Si c'est 'MM', c'est Big Endian, sinon c'est Little Endian avec 'II'
 }
 
 /* ========================================================================== */
@@ -241,13 +246,13 @@ void ExifParserJPEG::parse(const std::vector<unsigned char> &data)
 	bool bigEndian = _detectByteOrder(data, tiffStart);
 
 	uint16_t magic = _read16(data, tiffStart + 2, bigEndian);
-	if (magic != 0x002A)
+	if (magic != 0x002A) // 42 en hexadécimal, c'est le magic number de TIFF, preuve ULTIME qu'on arrive aux métadonnées et pas à une autre structure
 	{
 		std::cerr << "  TIFF magic invalide." << std::endl;
 		return;
 	}
 
-	std::cout << "  --- Données EXIF ---" << std::endl;
-	uint32_t ifd0Offset = _read32(data, tiffStart + 4, bigEndian);
-	_parseIFD(data, tiffStart, ifd0Offset, bigEndian, false);
+	std::cout << "  --- Données EXIF ---" << std::endl; // IDF0 pour les données générales
+	uint32_t ifd0Offset = _read32(data, tiffStart + 4, bigEndian); // Dans un jpeg, les données EXIF ne sont pas forcément rangées à la suite, il faut donc lire l'offset pour savoir où elles se trouvent
+	_parseIFD(data, tiffStart, ifd0Offset, bigEndian, false); // On commence le parsing de l'IFD0 car on a toutes les informations nécessaires
 }

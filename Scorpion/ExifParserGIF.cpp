@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 00:29:00 by adnen             #+#    #+#             */
-/*   Updated: 2026/04/05 15:34:27 by adnen            ###   ########.fr       */
+/*   Updated: 2026/04/05 18:14:28 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void ExifParserGIF::parse(const std::vector<unsigned char> &data)
 	size_t i = 0;
 	while (i < 6)
 	{
-		version += (char)data[i];
+		version += static_cast<char>(data[i]);
 		i++;
 	}
 	std::cout << "  Version           : " << version << std::endl;

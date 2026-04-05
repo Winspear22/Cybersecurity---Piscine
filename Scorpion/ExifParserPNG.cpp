@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 00:29:00 by adnen             #+#    #+#             */
-/*   Updated: 2026/04/05 15:34:44 by adnen            ###   ########.fr       */
+/*   Updated: 2026/04/05 18:14:12 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,10 +71,10 @@ void ExifParserPNG::parse(const std::vector<unsigned char> &data)
     	if (!_isOffsetSafe(data, pos + 4, 4))
     		break;
     	std::string chunkType;
-    	chunkType += (char)data[pos + 4];
-    	chunkType += (char)data[pos + 5];
-    	chunkType += (char)data[pos + 6];
-    	chunkType += (char)data[pos + 7];
+    	chunkType += static_cast<char>(data[pos + 4]);
+    	chunkType += static_cast<char>(data[pos + 5]);
+    	chunkType += static_cast<char>(data[pos + 6]);
+    	chunkType += static_cast<char>(data[pos + 7]);
 
     	size_t chunkDataStart = pos + 8;
 
@@ -88,7 +88,7 @@ void ExifParserPNG::parse(const std::vector<unsigned char> &data)
 
       		std::cout << "  Dimensions        : " << width << " x " << height
                 << std::endl;
-      		std::cout << "  Bit Depth         : " << (int)bitDepth << std::endl;
+      		std::cout << "  Bit Depth         : " << static_cast<int>(bitDepth) << std::endl;
 
       		std::string colorStr = "Unknown";
       		if (colorType == 0)
@@ -114,7 +114,7 @@ void ExifParserPNG::parse(const std::vector<unsigned char> &data)
 			{
         		if (data[chunkDataStart + j] == 0)
           			break;
-        		keyword += (char)data[chunkDataStart + j];
+        		keyword += static_cast<char>(data[chunkDataStart + j]);
         		j++;
       		}
       		j++; /* sauter le \0 */
@@ -122,7 +122,7 @@ void ExifParserPNG::parse(const std::vector<unsigned char> &data)
       		std::string textValue;
       		while (j < chunkLen)
 			{
-        		textValue += (char)data[chunkDataStart + j];
+        		textValue += static_cast<char>(data[chunkDataStart + j]);
         		j++;
       		}
 

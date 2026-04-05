@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/02 21:59:44 by adnen             #+#    #+#             */
-/*   Updated: 2026/04/02 16:21:06 by adnen            ###   ########.fr       */
+/*   Updated: 2026/04/05 18:16:10 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 	}
 
 	int i = 0;
-	while (i < (int)files.size())
+	while (i < static_cast<int>(files.size()))
 	{
 		if (FileValidator::isFileOfValidFormat(files[i]))
 		{

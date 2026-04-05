@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 00:29:00 by adnen             #+#    #+#             */
-/*   Updated: 2026/04/05 15:34:49 by adnen            ###   ########.fr       */
+/*   Updated: 2026/04/05 18:12:46 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,8 @@ void ExifParserBMP::parse(const std::vector<unsigned char> &data)
 	}
 
 	/* Dimensions (signed, little-endian) */
-	int32_t width = (int32_t)_read32(data, 18, false);
-	int32_t height = (int32_t)_read32(data, 22, false);
+	int32_t width = static_cast<int32_t>(_read32(data, 18, false));
+	int32_t height = static_cast<int32_t>(_read32(data, 22, false));
 	if (height < 0)
 		height = -height;
 
