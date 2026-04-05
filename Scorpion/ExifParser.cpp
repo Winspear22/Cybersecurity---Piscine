@@ -6,7 +6,7 @@
 /*   By: adnen <adnen@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 00:03:42 by adnen             #+#    #+#             */
-/*   Updated: 2026/04/05 12:22:54 by adnen            ###   ########.fr       */
+/*   Updated: 2026/04/05 16:44:55 by adnen            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,18 +65,18 @@ bool ExifParser::_isOffsetSafe(const std::vector<unsigned char> &data, size_t of
  */
 std::vector<unsigned char> ExifParser::_readFile(const std::string &filename)
 {
-	std::ifstream file(filename, std::ios::binary | std::ios::ate);
+	std::ifstream file(filename, std::ios::binary | std::ios::ate); // On ouvre le fichier en binaire et on met le curseur à la fin pour obtenir sa taille SANS LE PARCOURIR (gain de vitesse)
 	if (!file.is_open())
 		return std::vector<unsigned char>();
 
-	std::streamsize size = file.tellg();
-	file.seekg(0, std::ios::beg);
+	std::streamsize size = file.tellg(); // On récupère la taille du fichier (le curseur étant à la fin)
+	file.seekg(0, std::ios::beg); // On remet le curseur au début
 
-	if (size <= 0 || size > 50 * 1024 * 1024)
+	if (size <= 0 || size > 50 * 1024 * 1024) // Protection contre les fichiers vides ou trop gros
 		return std::vector<unsigned char>();
 
-	std::vector<unsigned char> data(size);
-	file.read(reinterpret_cast<char *>(data.data()), size);
+	std::vector<unsigned char> data(size); // On crée un vecteur de la taille du fichier exacte
+	file.read(reinterpret_cast<char *>(data.data()), size); // Read est une fonction héritée du C qui attend un char, or on a un vecteur d'unsigned char, donc on doit caster, on utilise CE cast car les autres refusent (car unsigned / signed est de la gestion de signe est dangereux)
 	return data;
 }
 
@@ -117,7 +117,8 @@ void ExifParser::displayExifData(const std::string &filename)
 		return;
 
 	/* JPEG : FF D8 FF */
-	if (data.size() >= 3 && data[0] == 0xFF && data[1] == 0xD8 && data[2] == 0xFF)
+	if (data.size() >= 3 && data[0] == 0xFF && data[1] == 0xD8 && data[2] == 0xFF) // Si la taille est supérieure ou égale à 3 octets 
+																					// et que les 3 premiers octets sont FF D8 FF
 	{
 		ExifParserJPEG parser;
 		parser.parse(data);
